@@ -46,6 +46,8 @@ struct Status {
     message: String,
 }
 
+/// Where the operator's port/interface choice is remembered, in the OS
+/// app-config directory.
 fn settings_path(app: &AppHandle) -> Result<std::path::PathBuf, String> {
     let dir = app
         .path()
@@ -55,6 +57,10 @@ fn settings_path(app: &AppHandle) -> Result<std::path::PathBuf, String> {
     Ok(dir.join("settings.json"))
 }
 
+/// Read persisted settings, falling back to defaults on EVERY failure path —
+/// unresolvable config dir, missing file, unparseable JSON. Deliberate, so a
+/// corrupt settings file can't brick the launcher, and it means a reset port is
+/// silent: nothing distinguishes "never saved" from "file is damaged".
 fn load_settings(app: &AppHandle, default_port: u16) -> Settings {
     let fallback = Settings {
         port: default_port,
@@ -69,6 +75,8 @@ fn load_settings(app: &AppHandle, default_port: u16) -> Settings {
     }
 }
 
+/// Persist settings. Unlike loading, this reports a write failure — though
+/// nothing re-reads to confirm the value survived.
 fn store_settings(app: &AppHandle, s: &Settings) -> Result<(), String> {
     let path = settings_path(app)?;
     let raw = serde_json::to_string_pretty(s).map_err(|e| e.to_string())?;
@@ -76,6 +84,9 @@ fn store_settings(app: &AppHandle, s: &Settings) -> Result<(), String> {
 }
 
 #[tauri::command]
+/// Static description of the supervised app, for the panel header: name,
+/// default port, URL template and theme. Read from the launcher config, so it
+/// changes only when the config does.
 fn get_app_info() -> Result<AppInfo, String> {
     let cfg = config::load()?;
     Ok(AppInfo {
@@ -87,17 +98,25 @@ fn get_app_info() -> Result<AppInfo, String> {
 }
 
 #[tauri::command]
+/// Bindable IPv4 interfaces plus the `all` (0.0.0.0) pseudo-entry.
+///
+/// Infallible by design — the picker must always have something to show, so an
+/// enumeration problem yields a short list rather than an error the panel would
+/// have to handle.
 fn list_interfaces() -> Vec<config::Interface> {
     config::list_interfaces()
 }
 
 #[tauri::command]
+/// The operator's remembered port and interface, or the config's defaults.
 fn get_settings(app: AppHandle) -> Result<Settings, String> {
     let cfg = config::load()?;
     Ok(load_settings(&app, cfg.app.default_port))
 }
 
 #[tauri::command]
+/// Remember a port/interface choice. Takes effect on the next start_server();
+/// a running server is not restarted.
 fn save_settings(app: AppHandle, port: u16, interface: String) -> Result<(), String> {
     store_settings(&app, &Settings { port, interface })
 }
@@ -123,6 +142,12 @@ fn status_from(app: &AppHandle, running: bool, message: String) -> Result<Status
 }
 
 #[tauri::command]
+/// Current launcher state, as the single object the panel re-renders from.
+///
+/// REAPS THE CHILD: it calls `try_wait()`, so a server that exited on its own is
+/// noticed here rather than leaving the panel claiming it's running. That makes
+/// this a side-effecting getter — the panel polls it, and removing the reap
+/// would make the UI lie.
 fn get_status(app: AppHandle, state: State<AppState>) -> Result<Status, String> {
     let mut guard = state.child.lock().map_err(|e| e.to_string())?;
     let running = match guard.as_mut() {
@@ -142,6 +167,16 @@ fn get_status(app: AppHandle, state: State<AppState>) -> Result<Status, String> 
 }
 
 #[tauri::command]
+/// Spawn the supervised server on the chosen interface and port.
+///
+/// Safe to call twice: an already-running child reports its current status
+/// instead of being double-spawned. It does NOT restart, so a settings change
+/// needs an explicit stop first.
+///
+/// The host:port reaches the server by whichever injection mode the launcher
+/// config selects — patching a key in its TOML, environment variables, or
+/// argv placeholders. See config.rs; the launcher itself knows nothing about
+/// any particular server.
 fn start_server(app: AppHandle, state: State<AppState>) -> Result<Status, String> {
     {
         // Already running? Report current status instead of double-spawning.
@@ -189,6 +224,8 @@ fn start_server(app: AppHandle, state: State<AppState>) -> Result<Status, String
 }
 
 #[tauri::command]
+/// Kill the supervised server. There is no graceful-shutdown signal, so a
+/// server that writes state on exit gets no chance to.
 fn stop_server(app: AppHandle, state: State<AppState>) -> Result<Status, String> {
     let mut guard = state.child.lock().map_err(|e| e.to_string())?;
     if let Some(mut child) = guard.take() {
@@ -200,6 +237,8 @@ fn stop_server(app: AppHandle, state: State<AppState>) -> Result<Status, String>
 }
 
 #[tauri::command]
+/// Open the server's web UI in the default browser, resolving the URL fresh
+/// rather than reusing whatever the panel last rendered.
 fn open_gui(app: AppHandle) -> Result<(), String> {
     let status = status_from(&app, false, String::new())?;
     tauri_plugin_opener::open_url(status.url, None::<&str>)
@@ -207,6 +246,8 @@ fn open_gui(app: AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
+/// Kill the server and exit. Distinct from hide_window(), which leaves it
+/// running in the tray — the difference an operator most often gets wrong.
 fn quit_app(app: AppHandle, state: State<AppState>) {
     if let Ok(mut guard) = state.child.lock() {
         if let Some(mut child) = guard.take() {
@@ -217,6 +258,7 @@ fn quit_app(app: AppHandle, state: State<AppState>) {
 }
 
 #[tauri::command]
+/// Hide the panel back to the tray. THE SERVER KEEPS RUNNING.
 fn hide_window(app: AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
         let _ = w.hide();
@@ -231,6 +273,17 @@ fn show_main(app: &AppHandle) {
 }
 
 #[cfg(unix)]
+/// Restore the execute bit on a bundled binary if packaging stripped it.
+///
+/// A binary shipped as a Tauri resource can lose its execute bit on some
+/// platforms, and the symptom is indistinguishable from the app simply not
+/// working. Best-effort: every failure is swallowed, because a server that
+/// already has its bit set is the normal case.
+///
+/// Note this does NOT address the macOS Gatekeeper trap, which is a different
+/// failure with the same shape: for an unsigned .app bundling helper binaries,
+/// approving the app does not unquarantine its payload and the helpers are
+/// SIGKILLed silently. No permission change fixes that — see the README.
 fn ensure_executable(path: &str) {
     use std::os::unix::fs::PermissionsExt;
     if let Ok(meta) = std::fs::metadata(path) {
