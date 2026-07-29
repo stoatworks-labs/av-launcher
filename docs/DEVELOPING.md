@@ -77,9 +77,17 @@ npm run tauri build    # build the app
 AV_LAUNCHER_CONFIG=launchers/flock.toml npm run tauri dev   # target another app
 ```
 
+```bash
+cd src-tauri && cargo test
+```
+
+The Rust tests cover **host:port injection for all three modes**, including the difference that
+catches people out — `flock`'s top-level `bind` versus `srt-router`'s nested `web.bind`. **Add a
+case there when you add an app with an unusual key path.**
+
 > **Rust lives in `src-tauri/`, its own cargo workspace — there is no `Cargo.toml` at the repo
-> root.** `cargo` commands need `--manifest-path src-tauri/Cargo.toml`. A bare `cargo test` in
-> the repo root will not find anything.
+> root.** `cargo` commands need `--manifest-path src-tauri/Cargo.toml`, or a `cd` first. A bare
+> `cargo test` in the repo root will not find anything.
 
 ---
 
