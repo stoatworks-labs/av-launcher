@@ -35,9 +35,9 @@ install). Built and released from each repo:
 
 | app | source | download | server embedding |
 | --- | --- | --- | --- |
-| srt-router | [`launcher/`](https://github.com/allansargeant/srt-router/tree/main/launcher) | [v0.1.0](https://github.com/allansargeant/srt-router/releases/tag/v0.1.0) | native binary bundled |
-| flock | [`launcher/`](https://github.com/allansargeant/flock/tree/master/launcher) | [v0.1.0](https://github.com/allansargeant/flock/releases/tag/v0.1.0) | native binary bundled |
-| RFutils | [`launcher/`](https://github.com/allansargeant/RFutils/tree/main/launcher) | [v0.1.0](https://github.com/allansargeant/RFutils/releases/tag/v0.1.0) | Node runtime + app embedded |
+| srt-router | [`launcher/`](https://github.com/stoatworks-labs/srt-router/tree/main/launcher) | [v0.1.0](https://github.com/stoatworks-labs/srt-router/releases/tag/v0.1.0) | native binary bundled |
+| flock | [`launcher/`](https://github.com/stoatworks-labs/flock/tree/master/launcher) | [v0.1.0](https://github.com/stoatworks-labs/flock/releases/tag/v0.1.0) | native binary bundled |
+| RFutils | [`launcher/`](https://github.com/stoatworks-labs/RFutils/tree/main/launcher) | [v0.1.0](https://github.com/stoatworks-labs/RFutils/releases/tag/v0.1.0) | Node runtime + app embedded |
 
 This repo remains the canonical template/shell. A shipped `.app` finds its
 baked-in config, theme, and server (a native binary, or an embedded Node runtime
@@ -126,7 +126,7 @@ Apple credentials as env vars / GitHub Actions secrets — `APPLE_CERTIFICATE`,
 `APPLE_CERTIFICATE_PASSWORD`, `APPLE_SIGNING_IDENTITY`, `APPLE_ID`,
 `APPLE_PASSWORD`, `APPLE_TEAM_ID`. RFutils' desktop app (which is built on this
 shell) documents the full flow in
-[its `launcher/SIGNING.md`](https://github.com/allansargeant/RFutils/blob/main/launcher/SIGNING.md).
+[its `launcher/SIGNING.md`](https://github.com/stoatworks-labs/RFutils/blob/main/launcher/SIGNING.md).
 For an *ad-hoc* local-only signature: `codesign --force --deep --sign - "<App>.app"`.
 On Windows, clearing SmartScreen needs an Authenticode code-signing certificate.
 

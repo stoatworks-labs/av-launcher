@@ -1,5 +1,5 @@
 # srt-router — crosspoint-based SRT/NDI router (Rust).
-# https://github.com/allansargeant/srt-router
+# https://github.com/stoatworks-labs/srt-router
 #
 #   AV_LAUNCHER_CONFIG=launchers/srt-router.toml npm run tauri dev
 #

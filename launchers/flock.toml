@@ -1,5 +1,5 @@
 # flock — BirdDog Play NDI/SRT decoder fleet manager (Rust).
-# https://github.com/allansargeant/flock
+# https://github.com/stoatworks-labs/flock
 #
 # Run the launcher against this app with:
 #   AV_LAUNCHER_CONFIG=launchers/flock.toml npm run tauri dev
