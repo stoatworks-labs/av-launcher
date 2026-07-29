@@ -36,7 +36,7 @@ install). Built and released from each repo:
 | app | source | download | server embedding |
 | --- | --- | --- | --- |
 | srt-router | [`launcher/`](https://github.com/stoatworks-labs/srt-router/tree/main/launcher) | [v0.1.0](https://github.com/stoatworks-labs/srt-router/releases/tag/v0.1.0) | native binary bundled |
-| flock | [`launcher/`](https://github.com/stoatworks-labs/flock/tree/master/launcher) | [v0.1.0](https://github.com/stoatworks-labs/flock/releases/tag/v0.1.0) | native binary bundled |
+| flock | [`launcher/`](https://github.com/stoatworks-labs/flock/tree/main/launcher) | [v0.1.0](https://github.com/stoatworks-labs/flock/releases/tag/v0.1.0) | native binary bundled |
 | RFutils | [`launcher/`](https://github.com/stoatworks-labs/RFutils/tree/main/launcher) | [v0.1.0](https://github.com/stoatworks-labs/RFutils/releases/tag/v0.1.0) | Node runtime + app embedded |
 
 This repo remains the canonical template/shell. A shipped `.app` finds its
