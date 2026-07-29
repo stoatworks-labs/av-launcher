@@ -137,6 +137,15 @@ cd src-tauri && cargo test  # covers host:port injection for all three modes,
                             # incl. flock (top-level bind) vs srt-router (web.bind)
 ```
 
+## Documentation
+
+| Doc | Contents |
+|---|---|
+| [docs/USER-GUIDE.md](docs/USER-GUIDE.md) | Using the panel, interface/port choices, and the Gatekeeper trap |
+| [docs/API.md](docs/API.md) | The launcher contract and the Tauri command surface |
+| [docs/DEVELOPING.md](docs/DEVELOPING.md) | Why changes ripple across three apps, and the behaviours to preserve |
+| [docs/adding-an-app.md](docs/adding-an-app.md) | The config schema, the three injection modes, host resolution |
+
 ## Adopting it for another app
 
 1. Copy the closest config from [`launchers/`](launchers/) (or the active
