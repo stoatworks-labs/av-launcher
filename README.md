@@ -27,6 +27,50 @@ app, not a bundled browser.
 *The same shell, themed per app from `launcher.toml`. Rendered from the exact
 panel HTML/CSS via [`scripts/screenshot.sh`](scripts/screenshot.sh) (headless Chrome).*
 
+<!-- downloads:start -->
+
+## Download
+
+**[v0.1.0](https://github.com/stoatworks-labs/av-launcher/releases/tag/v0.1.0)** — prebuilt for macOS, Windows and Linux. Pick your platform:
+
+<details>
+<summary><b>macOS</b> — Apple Silicon, Intel</summary>
+
+| Build | Download | Size |
+| --- | --- | --- |
+| Apple Silicon · .dmg disk image | [`av-launcher-0.1.0-macos-aarch64.dmg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.0/av-launcher-0.1.0-macos-aarch64.dmg) | 4.3 MB |
+| Intel · .dmg disk image | [`av-launcher-0.1.0-macos-x86_64.dmg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.0/av-launcher-0.1.0-macos-x86_64.dmg) | 4.5 MB |
+| Apple Silicon · .pkg installer | [`av-launcher-0.1.0-macos-aarch64.pkg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.0/av-launcher-0.1.0-macos-aarch64.pkg) | 3.8 MB |
+| Intel · .pkg installer | [`av-launcher-0.1.0-macos-x86_64.pkg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.0/av-launcher-0.1.0-macos-x86_64.pkg) | 4.0 MB |
+
+</details>
+
+<details>
+<summary><b>Windows</b> — x64</summary>
+
+| Build | Download | Size |
+| --- | --- | --- |
+| x64 · .exe installer | [`AV.Launcher_0.1.0_x64-setup.exe`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.0/AV.Launcher_0.1.0_x64-setup.exe) | 2.5 MB |
+| x64 · .msi installer | [`AV.Launcher_0.1.0_x64_en-US.msi`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.0/AV.Launcher_0.1.0_x64_en-US.msi) | 3.8 MB |
+
+</details>
+
+<details>
+<summary><b>Linux</b> — x64</summary>
+
+| Build | Download | Size |
+| --- | --- | --- |
+| x64 · .deb package (Debian/Ubuntu) | [`AV.Launcher_0.1.0_amd64.deb`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.0/AV.Launcher_0.1.0_amd64.deb) | 5.1 MB |
+| x64 · AppImage | [`AV.Launcher_0.1.0_amd64.AppImage`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.0/AV.Launcher_0.1.0_amd64.AppImage) | 82 MB |
+
+</details>
+
+All builds, checksums and release notes: [github.com/stoatworks-labs/av-launcher/releases](https://github.com/stoatworks-labs/av-launcher/releases).
+
+These builds are unsigned, so macOS and Windows each warn once on first launch — see [Unsigned builds — Gatekeeper, SmartScreen & Defender Firewall](#unsigned-builds--gatekeeper-smartscreen--defender-firewall) for the one-time fix.
+
+<!-- downloads:end -->
+
 ## Shipped apps
 
 Each fleet app ships this shell as its **own desktop app**, with the server
@@ -57,7 +101,7 @@ to start the binary and — the important part — **how to inject the chosen
 | --- | --- | --- |
 | `configfile` | patches a dotted key in the app's own TOML, then passes the rendered copy as the config arg | **srt-router** (nested `web.bind`, `--config`), **flock** (top-level `bind`, positional arg) |
 | `env` | sets environment variables | **RFutils** (`RFUTILS_SERVER_PORT` / `RFUTILS_HOST`) |
-| `args` | `{host}`/`{port}` placeholders already in `[app].args` | a plain `--host --port` server |
+| `args` | `{host}`/`{port}` placeholders already in `[app].args` | **WebLinked** (`--bind` / `--port`, plus `--headless`) |
 
 Ready-made configs for each app live in [`launchers/`](launchers/). To point the
 launcher at one you only pick a config and swap the icon — no Rust changes.
