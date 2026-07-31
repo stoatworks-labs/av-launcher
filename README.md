@@ -112,14 +112,9 @@ npm run tauri build         # produces a .app / .dmg (macOS), etc.
 ```
 
 By default the `.app`/`.dmg`/`.exe` this produces is **not code-signed or
-notarized** — that needs paid Apple / Windows developer certificates. The app is
-safe to run; the OS just can't verify a publisher, so it warns the first time.
-
-- **macOS** — first launch says the app **"is damaged"** or **"cannot be opened
-  because the developer cannot be verified"**. Fix: **right-click → Open →
-  Open** (once), or `xattr -dr com.apple.quarantine "/Applications/<App>.app"`.
-- **Windows** — the installer trips SmartScreen (**"Windows protected your
-  PC"**) → **More info → Run anyway**.
+notarized**, so macOS and Windows will each warn once — see
+[Unsigned builds](#unsigned-builds--gatekeeper-smartscreen--defender-firewall)
+below, and [docs/UNSIGNED.md](docs/UNSIGNED.md) for the full walkthrough.
 
 **Signing it yourself:** Tauri signs + notarizes automatically when you set the
 Apple credentials as env vars / GitHub Actions secrets — `APPLE_CERTIFICATE`,
@@ -166,3 +161,24 @@ src-tauri/
   src/config.rs      config parsing, interface enumeration, host:port injection (+ tests)
   src/lib.rs         Tauri commands, process supervision, system tray
 ```
+
+## Unsigned builds — Gatekeeper, SmartScreen & Defender Firewall
+
+The release binaries are **not code-signed or notarized** — that needs paid Apple
+and Microsoft developer certificates this project doesn't carry. The downloads are
+fine; the OS just can't identify the publisher, so it warns you the first time.
+
+- **macOS** — *"cannot be opened because the developer cannot be verified"*.
+  Right-click the app → **Open** → **Open**, or clear the flag:
+  `xattr -dr com.apple.quarantine "/Applications/AV Launcher.app"`
+- **Windows** — SmartScreen shows *"Windows protected your PC"* →
+  **More info** → **Run anyway**.
+- **Windows Defender Firewall** — first launch pops *"Allow AV Launcher to communicate
+  on these networks"*. Tick **Private** (and **Domain** on a managed network) — AV
+  Launcher needs it to bind the wrapped app's web server to the interface you chose in
+  the panel. Deny it and the app will start but be reachable only from the machine it
+  runs on.
+- **Linux** — no signing gate.
+
+Per-artifact steps, self-signing, checksum verification and the Defender Firewall reset
+procedure: **[docs/UNSIGNED.md](docs/UNSIGNED.md)**.
