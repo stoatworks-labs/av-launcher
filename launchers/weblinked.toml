@@ -1,0 +1,47 @@
+# WebLinked — a URL rendered to SDI and video-over-IP (C++/CEF).
+# https://github.com/stoatworks-labs/weblinked
+#
+# Run the launcher against this app with:
+#   AV_LAUNCHER_CONFIG=launchers/weblinked.toml npm run tauri dev
+#
+# WebLinked specifics that differ from the rest of the fleet:
+#
+#   * `args` injection — it takes --bind and --port directly, so there is no
+#     config file to patch and no environment to set.
+#   * --headless is required, not optional. WebLinked's operator window IS its
+#     control page, served over HTTP by the process itself. Without --headless
+#     the tray would be supervising a process that has already put a second,
+#     unmanaged copy of the UI on screen.
+#   * The command is a binary inside a macOS .app bundle. WebLinked cannot be
+#     shipped as a bundled resource the way srtrouter and flock are: it carries
+#     the Chromium Embedded Framework, whose symlinked Versions/Resources
+#     defeat Tauri's resource collector, and five name-matched helper .apps
+#     that Gatekeeper kills when nested inside another ad-hoc signed bundle.
+#     So this points at an installed app.
+#
+# Do NOT add --no-settings. WebLinked's settings file is how an operator's
+# outputs survive a restart, and the host:port passed here takes precedence
+# over the file anyway.
+
+[app]
+name = "WebLinked"
+command = "/Applications/WebLinked.app/Contents/MacOS/WebLinked"
+args = ["--headless", "--bind", "{host}", "--port", "{port}"]
+url = "http://{host}:{port}/"
+default_port = 7654
+
+[inject]
+mode = "args"
+
+# Palette mirrored from WebLinked's own control page (dark slate + sky accent).
+[app.theme]
+bg = "#14171a"
+panel = "#1d2126"
+"panel-2" = "#23282e"
+border = "#31383f"
+text = "#e6eaee"
+muted = "#8e9aa6"
+dim = "#5a646e"
+accent = "#4da3ff"
+"accent-soft" = "#16283c"
+good = "#35c46a"

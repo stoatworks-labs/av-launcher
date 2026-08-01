@@ -90,6 +90,12 @@ args = ["--host", "{host}", "--port", "{port}"]
 mode = "args"
 ```
 
+* **WebLinked** uses this, with one addition worth copying: the app has its own
+  window (its control page, served by the process itself), so the config passes
+  `--headless` alongside the injected host and port. An app that can show its
+  own UI needs telling not to, or the tray ends up supervising a process that
+  has already put a second, unmanaged copy of the UI on screen.
+
 ## Host / interface resolution
 
 The **GUI Interface** dropdown lists every bindable IPv4 interface plus an
