@@ -1,4 +1,4 @@
-# av-launcher — User Guide
+# av-launcher user guide
 
 A menu-bar tray launcher for the fleet's local web-server apps: pick a **network interface** and
 **port**, **Start/Stop** the server, **Open** the web UI, and leave it in the **system tray**.
@@ -8,8 +8,7 @@ looking at.
 
 ---
 
-## 0. ⚠ If the server won't start on a clean Mac, read this first
-
+## If the server won't start on a clean Mac, read this first
 **For an unsigned `.app` that bundles helper binaries, approving the app does NOT unquarantine
 its payload. The helpers are SIGKILLed silently.**
 
@@ -39,7 +38,17 @@ problem shows up.**
 
 ---
 
-## 1. Using the panel
+## Using the panel
+
+![The launcher panel for flock: the app's own name and icon, a RUNNING badge with the URL the server is actually on, the network interface and port selectors, Stop server, and Open / Hide / Quit.](screenshots/panel-flock.png)
+
+*The same shell, themed per app — [srt-router](screenshots/panel-srt-router.png) and
+[RFutils](screenshots/panel-rfutils.png) get their own name, icon and colour, and behave
+identically.*
+
+The URL under the RUNNING badge is **the address the server is actually bound to**, not a
+template. If it says `127.0.0.1` when you expected a LAN address, the interface selector is the
+thing to change — copy that URL to reach the app from another machine.
 
 | Control | Does |
 |---|---|
@@ -55,8 +64,7 @@ close the panel expecting the app to keep serving, use Hide.
 
 ---
 
-## 2. Interface and port
-
+## Interface and port
 The **GUI Interface** dropdown lists every bindable IPv4 interface plus **All interfaces
 (0.0.0.0)**.
 
@@ -76,8 +84,7 @@ unreadable — every failure there falls back to the default without an error.
 
 ---
 
-## 3. Starting and stopping
-
+## Starting and stopping
 - **Pressing Start when it's already running does nothing harmful** — it just reports the current
   status. It does **not** restart the server.
 - **If the server exits on its own**, the panel notices the next time it refreshes status, not
@@ -88,18 +95,17 @@ unreadable — every failure there falls back to the default without an error.
 
 ---
 
-## 4. Troubleshooting
-
+## Troubleshooting
 | Symptom | Cause |
 |---|---|
-| **App opens, server never starts, no error (macOS)** | **The Gatekeeper quarantine trap** (§0). Check this first. |
+| **App opens, server never starts, no error (macOS)** | **The Gatekeeper quarantine trap** ([If the server won't start on a clean Mac, read this first](#if-the-server-wont-start-on-a-clean-mac-read-this-first)). Check this first. |
 | **Server starts then immediately stops** | Often the working directory: several apps read relative paths (`state/routes.json`, `data/registry.json`) and fail if started elsewhere. That's a launcher-config issue, not a server bug. |
-| **Port reverted to the default** | The saved settings file is missing or unreadable; it falls back silently (§2). |
-| **URL shows an IP I didn't pick** | You chose "All interfaces", so it shows your primary non-loopback IP to keep the link clickable (§2). |
-| **Others on the network can reach it** | "All interfaces" binds `0.0.0.0` (§2). |
-| **Closed the panel and the app kept serving** | That's Hide. Quit stops it (§1). |
-| **Start did nothing** | It was already running (§3). |
-| **The app lost unsaved state on Quit** | Quit kills the child; there's no graceful shutdown (§3). |
+| **Port reverted to the default** | The saved settings file is missing or unreadable; it falls back silently ([Interface and port](#interface-and-port)). |
+| **URL shows an IP I didn't pick** | You chose "All interfaces", so it shows your primary non-loopback IP to keep the link clickable ([Interface and port](#interface-and-port)). |
+| **Others on the network can reach it** | "All interfaces" binds `0.0.0.0` ([Interface and port](#interface-and-port)). |
+| **Closed the panel and the app kept serving** | That's Hide. Quit stops it ([Using the panel](#using-the-panel)). |
+| **Start did nothing** | It was already running ([Starting and stopping](#starting-and-stopping)). |
+| **The app lost unsaved state on Quit** | Quit kills the child; there's no graceful shutdown ([Starting and stopping](#starting-and-stopping)). |
 
 ---
 
