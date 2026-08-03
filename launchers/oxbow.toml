@@ -1,0 +1,33 @@
+# oxbow — FFGL effects over NDI/OMT for hosts with no plugin interface.
+# https://github.com/stoatworks-labs/oxbow
+#
+#   AV_LAUNCHER_CONFIG=launchers/oxbow.toml npm run tauri dev
+#
+# oxbow takes the control bind/port straight on the command line, so this is
+# plain `args` injection. The pump's input/output/chain live in the JSON
+# config file; the launcher only owns where the control page listens.
+
+[app]
+name = "oxbow"
+command = "/Users/allansargeant/Projects/oxbow/build/oxbow"
+args = ["run", "--config", "/Users/allansargeant/Projects/oxbow/oxbow.json",
+        "--bind", "{host}", "--port", "{port}"]
+url = "http://{host}:{port}/"
+default_port = 8720
+cwd = "/Users/allansargeant/Projects/oxbow"
+
+[inject]
+mode = "args"
+
+# Palette mirrored from oxbow's control page (deep slate + teal accent).
+[app.theme]
+bg = "#10151a"
+panel = "#171e26"
+"panel-2" = "#1d2530"
+border = "#232d38"
+text = "#cfd8e3"
+muted = "#9fb0c0"
+dim = "#7d8b9b"
+accent = "#4d9fb8"
+"accent-soft" = "#16232b"
+good = "#37835c"
