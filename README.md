@@ -67,7 +67,7 @@ panel HTML/CSS via [`scripts/screenshot.sh`](scripts/screenshot.sh) (headless Ch
 
 All builds, checksums and release notes: [github.com/stoatworks-labs/av-launcher/releases](https://github.com/stoatworks-labs/av-launcher/releases).
 
-These builds are unsigned, so macOS and Windows each warn once on first launch — see [Unsigned builds — Gatekeeper, SmartScreen & Defender Firewall](#unsigned-builds--gatekeeper-smartscreen--defender-firewall) for the one-time fix.
+The Windows builds are unsigned, so SmartScreen warns once — see [Unsigned builds — Gatekeeper, SmartScreen & Defender Firewall](#unsigned-builds--gatekeeper-smartscreen--defender-firewall) for the one-time click-through.
 
 <!-- downloads:end -->
 
