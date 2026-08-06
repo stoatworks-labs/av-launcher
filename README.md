@@ -38,9 +38,9 @@ panel HTML/CSS via [`scripts/screenshot.sh`](scripts/screenshot.sh) (headless Ch
 
 | Build | Download | Size |
 | --- | --- | --- |
-| Apple Silicon · .dmg disk image | [`av-launcher-0.1.1-macos-aarch64.dmg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.1/av-launcher-0.1.1-macos-aarch64.dmg) | 4.3 MB |
-| Intel · .dmg disk image | [`av-launcher-0.1.1-macos-x86_64.dmg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.1/av-launcher-0.1.1-macos-x86_64.dmg) | 4.5 MB |
-| Apple Silicon · .pkg installer | [`av-launcher-0.1.1-macos-aarch64.pkg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.1/av-launcher-0.1.1-macos-aarch64.pkg) | 3.8 MB |
+| Apple Silicon · .dmg disk image | [`av-launcher-0.1.1-macos-aarch64.dmg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.1/av-launcher-0.1.1-macos-aarch64.dmg) | 3.7 MB |
+| Intel · .dmg disk image | [`av-launcher-0.1.1-macos-x86_64.dmg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.1/av-launcher-0.1.1-macos-x86_64.dmg) | 4.0 MB |
+| Apple Silicon · .pkg installer | [`av-launcher-0.1.1-macos-aarch64.pkg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.1/av-launcher-0.1.1-macos-aarch64.pkg) | 3.7 MB |
 | Intel · .pkg installer | [`av-launcher-0.1.1-macos-x86_64.pkg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.1.1/av-launcher-0.1.1-macos-x86_64.pkg) | 4.0 MB |
 
 </details>
@@ -67,7 +67,7 @@ panel HTML/CSS via [`scripts/screenshot.sh`](scripts/screenshot.sh) (headless Ch
 
 All builds, checksums and release notes: [github.com/stoatworks-labs/av-launcher/releases](https://github.com/stoatworks-labs/av-launcher/releases).
 
-The Windows builds are unsigned, so SmartScreen warns once — see [Unsigned builds — Gatekeeper, SmartScreen & Defender Firewall](#unsigned-builds--gatekeeper-smartscreen--defender-firewall) for the one-time click-through.
+macOS builds are signed and notarised and open normally. The Windows builds are unsigned, so SmartScreen warns once — see [Unsigned builds — Gatekeeper, SmartScreen & Defender Firewall](#unsigned-builds--gatekeeper-smartscreen--defender-firewall) for the one-time click-through.
 
 <!-- downloads:end -->
 
