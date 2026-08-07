@@ -1,0 +1,49 @@
+# openrcs — modern control surface for Analog Way Midra/LiveCore processors.
+# https://github.com/stoatworks-labs/openrcs
+#
+#   AV_LAUNCHER_CONFIG=launchers/openrcs.toml npm run tauri dev
+#
+# openrcs-server takes the switcher's IP + model on the CLI. The launcher
+# collects those as custom fields ([[field]]) and injects them as
+# {device}/{platform}; {host}:{port} is the server's own listen address.
+
+[app]
+name = "openrcs"
+command = "/Users/allansargeant/Projects/openrcs/target/release/openrcs-server"
+args = ["--device", "{device}:10500", "--platform", "{platform}", "--listen", "{host}:{port}"]
+url = "http://{host}:{port}/"
+default_port = 8730
+cwd = "/Users/allansargeant/Projects/openrcs"
+
+[inject]
+mode = "args"
+
+# The switcher's IP and model, entered in the panel — no CLI needed.
+[[field]]
+key = "device"
+label = "Switcher IP"
+type = "text"
+placeholder = "192.168.1.42"
+
+[[field]]
+key = "platform"
+label = "Model"
+type = "select"
+default = "livecore"
+options = [
+  { value = "livecore", label = "LiveCore (NeXtage / Ascender)" },
+  { value = "midra", label = "Midra (Pulse2 / Eikos2)" },
+]
+
+# Palette mirrored from openrcs's web UI (near-black + cyan accent).
+[app.theme]
+bg = "#0d1015"
+panel = "#151a21"
+"panel-2" = "#1b222c"
+border = "#242c37"
+text = "#e6ebf2"
+muted = "#8b96a5"
+dim = "#5b6673"
+accent = "#22b8cf"
+"accent-soft" = "#12414d"
+good = "#3fb950"
