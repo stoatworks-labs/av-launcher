@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 dist-release/
+
+# openrcs launcher build artifacts
+src-tauri/openrcs-server
+dist/
