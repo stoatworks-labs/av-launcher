@@ -2,5 +2,5 @@
   "productName": "openrcs",
   "identifier": "com.allansargeant.openrcs",
   "app": { "windows": [ { "label": "main", "title": "openrcs", "width": 460, "height": 520, "resizable": false, "maximizable": false, "fullscreen": false, "center": true } ] },
-  "bundle": { "targets": ["app"], "resources": ["launcher.toml", "openrcs-server"] }
+  "bundle": { "targets": ["app"], "resources": ["launcher.toml", "openrcs-server*"] }
 }

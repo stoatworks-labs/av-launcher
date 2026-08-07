@@ -1,0 +1,95 @@
+name: openrcs-launcher
+
+# Build the openrcs tray launcher for Windows and Linux. Tauri cannot
+# cross-compile, so each platform builds on its own runner (macOS is built and
+# signed locally). Each runner stages the matching openrcs-server release binary
+# as a bundled resource, then `tauri build` with the openrcs overrides.
+on:
+  workflow_dispatch:
+    inputs:
+      server_version:
+        description: openrcs-server release tag to bundle
+        default: v0.2.0
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x86_64
+            os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            bundles: deb,appimage
+            server_asset: openrcs-server-{VER}-linux-x64.tar.gz
+            server_bin: openrcs-server
+          - name: windows-x86_64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            bundles: nsis
+            server_asset: openrcs-server-{VER}-windows-x64.zip
+            server_bin: openrcs-server.exe
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: openrcs-${{ matrix.target }}
+          workspaces: 'src-tauri -> target'
+
+      - name: Install Tauri Linux deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev \
+            librsvg2-dev patchelf libgtk-3-dev
+
+      - name: Stage openrcs-server + config
+        shell: bash
+        run: |
+          ver="${{ github.event.inputs.server_version }}"
+          # relative-command config (resolved against the bundle's resources)
+          sed -e 's#^command = .*#command = "openrcs-server"#' -e '/^cwd = /d' \
+            launchers/openrcs.toml > src-tauri/launcher.toml
+          asset="${{ matrix.server_asset }}"; asset="${asset/\{VER\}/$ver}"
+          curl -fL "https://github.com/stoatworks-labs/openrcs/releases/download/$ver/$asset" -o server-asset
+          mkdir -p srv
+          tar -xf server-asset -C srv           # bsdtar/gnutar handle .tar.gz and .zip per-platform
+          bin="$(find srv -type f -name '${{ matrix.server_bin }}' | head -1)"
+          cp "$bin" "src-tauri/${{ matrix.server_bin }}"
+          chmod +x "src-tauri/${{ matrix.server_bin }}" || true
+
+      - name: Build
+        shell: bash
+        run: |
+          npm install --no-audit --no-fund
+          npx --no-install tauri build --target ${{ matrix.target }} \
+            --bundles ${{ matrix.bundles }} --config src-tauri/tauri.openrcs.conf.json
+
+      - name: Collect bundles
+        shell: bash
+        run: |
+          mkdir -p out
+          find "src-tauri/target/${{ matrix.target }}/release/bundle" -type f \
+            \( -name '*.deb' -o -name '*.AppImage' -o -name '*-setup.exe' \) \
+            -exec cp {} out/ \;
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openrcs-launcher-${{ matrix.name }}
+          path: out/*
+          if-no-files-found: error
