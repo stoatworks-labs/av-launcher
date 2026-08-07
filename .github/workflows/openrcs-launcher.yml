@@ -65,9 +65,12 @@ jobs:
           sed -e 's#^command = .*#command = "openrcs-server"#' -e '/^cwd = /d' \
             launchers/openrcs.toml > src-tauri/launcher.toml
           asset="${{ matrix.server_asset }}"; asset="${asset/\{VER\}/$ver}"
-          curl -fL "https://github.com/stoatworks-labs/openrcs/releases/download/$ver/$asset" -o server-asset
+          curl -fL "https://github.com/stoatworks-labs/openrcs/releases/download/$ver/$asset" -o "$asset"
           mkdir -p srv
-          tar -xf server-asset -C srv           # bsdtar/gnutar handle .tar.gz and .zip per-platform
+          case "$asset" in
+            *.tar.gz) tar -xzf "$asset" -C srv ;;                # GNU tar (Linux)
+            *.zip)    7z x -y "-osrv" "$asset" >/dev/null ;;     # 7-Zip (Windows runner)
+          esac
           bin="$(find srv -type f -name '${{ matrix.server_bin }}' | head -1)"
           cp "$bin" "src-tauri/${{ matrix.server_bin }}"
           chmod +x "src-tauri/${{ matrix.server_bin }}" || true
