@@ -115,3 +115,9 @@ The **GUI Interface** dropdown lists every bindable IPv4 interface plus an
    `npm run tauri icon path/to/icon.png` regenerates every size.
 6. If it's a `configfile` app with an unusual key path, add a test case in
    `config.rs` mirroring the `flock`/`srt-router` ones.
+7. Rewrite the `NSLocalNetworkUsageDescription` string in
+   `src-tauri/Info.plist` so it names this app. macOS shows it verbatim when
+   asking the user, and without the key a double-clicked app is denied LAN
+   traffic with no prompt and no error — which no test run from a terminal can
+   reproduce, because a terminal-launched process inherits the terminal's own
+   permission.

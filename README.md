@@ -193,6 +193,10 @@ cd src-tauri && cargo test  # covers host:port injection for all three modes,
    `[inject]` block. Full guide: [docs/adding-an-app.md](docs/adding-an-app.md).
 3. Replace `src-tauri/icons/` with the app's icon
    (`npm run tauri icon path/to/icon.png` regenerates all sizes).
+4. **Rewrite the string in [`src-tauri/Info.plist`](src-tauri/Info.plist)** to
+   name the app and say what it does on the network. Without that key a
+   double-clicked macOS app is denied local network traffic *silently* — the
+   file explains why no test catches it.
 
 ## Layout
 
@@ -202,6 +206,7 @@ launchers/           ready-made per-app configs (srt-router, flock, rfutils)
 docs/adding-an-app.md   schema + injection modes + new-app checklist
 src-tauri/
   launcher.toml      the ACTIVE per-app config (this build → srt-router)
+  Info.plist         macOS local-network declaration (edit the string per app)
   src/config.rs      config parsing, interface enumeration, host:port injection (+ tests)
   src/lib.rs         Tauri commands, process supervision, system tray
 ```
