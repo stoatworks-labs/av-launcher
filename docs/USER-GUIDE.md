@@ -9,8 +9,11 @@ looking at.
 ---
 
 ## If the server won't start on a clean Mac, read this first
-**For an unsigned `.app` that bundles helper binaries, approving the app does NOT unquarantine
-its payload. The helpers are SIGKILLed silently.**
+**The released builds are now Developer ID-signed and notarised**, so this should no longer bite
+anyone who downloads the `.dmg` or `.pkg`. It is still the first thing to check if you built the
+app yourself, or if you are running a download from before that changed — because **for an
+unsigned `.app` that bundles helper binaries, approving the app does NOT unquarantine its
+payload, and the helpers are SIGKILLed silently.**
 
 That is exactly this app's shape — a tray app wrapping an embedded server binary. The failure
 mode is nasty:

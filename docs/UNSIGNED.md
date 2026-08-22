@@ -1,26 +1,30 @@
-# Running unsigned AV Launcher builds
+# Running AV Launcher — Gatekeeper, SmartScreen and firewalls
 
-Everything this project releases is built and published unsigned. This page explains
-what each operating system will say, exactly how to get past it, and how to sign the
-artifacts yourself if you'd rather not click through warnings.
+macOS builds are signed and notarised, so they just open. The Windows builds are
+unsigned and SmartScreen will object once. This page covers that, the firewall prompts,
+and what to do with a copy you built yourself.
 
-## Why they're unsigned
+## Why the Windows builds are unsigned
 
-Clearing these warnings for redistribution costs money, not effort:
+macOS signing is covered: this project carries an Apple Developer Program membership and
+a *Developer ID Application* certificate, and every macOS artefact is notarised by Apple.
 
-| Platform | What's needed | Cost |
-|---|---|---|
-| macOS | Apple Developer Program + a *Developer ID Application* certificate, plus notarization of every build | $99/year |
-| Windows | An Authenticode code-signing certificate (OV, or EV to skip SmartScreen reputation-building) | ~$200–500/year |
-
-This project carries neither. Nothing is wrong with the downloads — the OS simply has
-no publisher identity to check them against, so it assumes the worst once and then
-remembers your answer.
+Windows is not. An Authenticode certificate (OV, or EV to skip building SmartScreen
+reputation) runs ~$200–500/year, and the certificate authorities will only issue one to a
+registered legal entity — which this project is not. Nothing is wrong with the Windows
+downloads; Windows simply has no publisher identity to check them against, so it assumes
+the worst once and then remembers your answer.
 
 > If you'd rather not trust a stranger's binary at all, every release is reproducible
 > from source — see the build instructions in the README.
 
 ## macOS — Gatekeeper
+
+**A released `.dmg` or `.pkg` needs none of this.** What follows applies to a build you
+made yourself, or to a download from before the releases were signed — and it matters
+more for this app than most, because **approving an unsigned `.app` does not unquarantine
+the helper binaries inside it**. The app then launches, looks fine, and its server never
+starts, with no error anywhere.
 
 macOS quarantines anything downloaded from a browser, then refuses to launch it because
 **"the developer cannot be verified"**. Any one of these clears it:
