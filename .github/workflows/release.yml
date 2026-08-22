@@ -123,7 +123,7 @@ jobs:
           cp *.dmg *.pkg out/ 2>/dev/null || true
           ls -la out || true
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: av-launcher-${{ matrix.name }}
           path: out/*
