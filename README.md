@@ -103,6 +103,14 @@ to start the binary and — the important part — **how to inject the chosen
 | `env` | sets environment variables | **RFutils** (`RFUTILS_SERVER_PORT` / `RFUTILS_HOST`) |
 | `args` | `{host}`/`{port}` placeholders already in `[app].args` | **WebLinked** (`--bind` / `--port`, plus `--headless`) |
 
+A fourth kind of app has nothing to launch. The fleet's browser tools are static
+pages, and a tray app for one needs something to *serve* `dist/` rather than a
+process to supervise — so `[serve] mode = "static"` serves a bundled directory
+from inside the launcher itself, on the same interface and port, honouring the
+site's `_headers`. Nothing is spawned, which matters on macOS: a static-server
+helper bundled beside the site would be quarantined with the app and killed
+silently. See [docs/adding-an-app.md](docs/adding-an-app.md#a-static-site-instead-of-a-server-serve).
+
 Ready-made configs for each app live in [`launchers/`](launchers/). To point the
 launcher at one you only pick a config and swap the icon — no Rust changes.
 (A future version can ship one bundled app per fleet member, each with its own

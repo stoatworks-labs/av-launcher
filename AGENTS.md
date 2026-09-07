@@ -31,6 +31,7 @@ src/            Launcher card UI (frontend). Original card design that themes
                 itself to each app's own web UI.
 src-tauri/      Tauri/Rust shell - main binary, tray, window management
   config.rs       Launcher configuration
+  serve.rs        The in-process static server behind `[serve] mode = "static"`
   lib.rs / main.rs
   launcher.toml   Default/dev launcher config
 launchers/      Per-app launcher configs and themes
@@ -58,6 +59,20 @@ This is precisely av-launcher's shape: a tray app wrapping an embedded server bi
 failure mode is nasty — the app launches and looks fine, the server never starts, and there is
 no visible error. If a consuming app reports "the server won't start on a clean Mac", this is
 the first thing to check, not a bug in the server.
+
+## 5a. Static sites are served in-process, and that is because of §5
+
+`[serve] mode = "static"` (2026-09-07) exists so the fleet's browser tools can
+ship as tray apps. It serves a bundled directory from a thread inside the
+launcher — `serve.rs`, `tiny_http`, GET/HEAD only, traversal checked after
+percent decoding, the site's `_headers` applied so the offline copy is no more
+permissive than the hosted one. **It must stay in-process.** The obvious
+alternative, a bundled static-server helper, is precisely the unsigned-helper
+shape §5 describes, multiplied by twenty tools. `AppState` holds either a
+`Child` or a `StaticServer`; `shutdown()` stops whichever exists, and
+`get_status` reaps both, so a serving thread that dies is reported as Stopped
+rather than believed. `[app].command` and `[inject]` became optional for this
+and every shipped child-process config still spells both out.
 
 ## 6. Status
 

@@ -96,6 +96,49 @@ mode = "args"
   own UI needs telling not to, or the tray ends up supervising a process that
   has already put a second, unmanaged copy of the UI on screen.
 
+## A static site instead of a server: `[serve]`
+
+The fleet's browser tools — Aspect Calc, Pixel Peeker, Negative Space and the
+rest — are static pages with nothing to run. A tray app for one of them still
+needs *something* to serve `dist/` on the chosen interface and port, and the
+three modes above all supervise a child process. Bundling a static-server
+binary beside the site would be exactly the shape the Gatekeeper note in
+`AGENTS.md` §5 warns about: an unsigned helper inside a `.app` is quarantined
+with it and killed silently on a clean Mac.
+
+So the launcher serves the directory itself, in-process. No child, no
+`[inject]`, no `command`:
+
+```toml
+[app]
+name = "Aspect Calc"
+default_port = 8520
+
+[serve]
+mode = "static"
+dir = "{resource}/site"          # or an absolute path in development
+# headers = "{resource}/site/_headers"   # default: _headers inside dir, if present
+# index = "index.html"
+not_found = "none"               # "spa" serves the index for any unknown path
+```
+
+What it does: GET and HEAD for files under `dir`, checked after percent
+decoding and canonicalisation so `%2e%2e%2f` cannot walk out of it; a
+directory serves its index; the site's Cloudflare `_headers` file is honoured
+— same CSP, same cache policy as the hosted copy — and never served itself.
+`not_found` takes the same two values as the fleet's `not_found_handling`.
+There are no ranges, no compression and no keep-alive, on purpose: a browser
+tool is a few hundred kilobytes on a LAN.
+
+The panel is unchanged. Start binds, Stop releases the port, Open opens the
+URL, and a serving thread that stops for any reason is reported as Stopped
+rather than believed. See [`../launchers/static-site.toml`](../launchers/static-site.toml).
+
+For a shipped build, bundle the built site as a resource (a `site/**` entry in
+`tauri.conf.json`'s `bundle.resources`) and point `dir` at `{resource}/site`.
+The site is data, not an executable, so nothing about it needs an execute bit
+or a signature of its own.
+
 ## Host / interface resolution
 
 The **GUI Interface** dropdown lists every bindable IPv4 interface plus an
@@ -109,7 +152,8 @@ The **GUI Interface** dropdown lists every bindable IPv4 interface plus an
 
 1. Copy the closest example from `launchers/`.
 2. Set `[app].name`, `command`, `args`, `default_port`, `cwd`.
-3. Choose the `[inject]` mode and fill its block.
+3. Choose the `[inject]` mode and fill its block — or, for a static site,
+   a `[serve]` block instead of both `command` and `[inject]`.
 4. Confirm the server's URL scheme in `[app].url`.
 5. (For a shipped build) replace `src-tauri/icons/` with the app's icon —
    `npm run tauri icon path/to/icon.png` regenerates every size.

@@ -1,0 +1,39 @@
+# A browser tool as a tray app: the launcher serves the site itself.
+#
+# No child process, no [inject] block. `[serve]` names a directory and the
+# launcher serves it in-process on the interface and port chosen in the panel,
+# honouring the site's Cloudflare `_headers` so the offline copy sends the same
+# CSP and cache headers as the hosted one. Start/Stop/Open behave exactly as
+# they do for a supervised server.
+#
+# A shipped build bundles the built site as a resource and points `dir` at it:
+#
+#   dir = "{resource}/site"
+#
+# For development, an absolute path to a build output is fine:
+#
+#   AV_LAUNCHER_CONFIG=launchers/static-site.toml npm run tauri dev
+
+[app]
+name = "Aspect Calc"
+url = "http://{host}:{port}/"
+default_port = 8520
+
+[serve]
+mode = "static"
+dir = "/Users/allansargeant/Projects/video/aspect-calc/dist"
+# headers = "{resource}/site/_headers"   # default: `_headers` inside dir, if present
+# index = "index.html"
+not_found = "none"                         # or "spa" for a client-routed app
+
+[app.theme]
+bg = "#0f1115"
+panel = "#161a21"
+"panel-2" = "#1d222b"
+border = "#2a2f3a"
+text = "#e8eaf0"
+muted = "#aab2c0"
+dim = "#6b7280"
+accent = "#7cc4ff"
+"accent-soft" = "#17263a"
+good = "#37835c"

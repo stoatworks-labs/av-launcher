@@ -29,3 +29,23 @@ The multi-MB server binary in `<repo>/launcher/src-tauri/bin/` is git-ignored (s
 **2026-08-22 — the Windows tray build was never actually RUN until now, and it did not work.** The 2026-07-18 note above calls the Windows build "green"; that meant CI *bundled* successfully. Launching the installed bundle on real Windows showed Start doing nothing at all, silently, in every `{resource}`-based launcher. Root cause and the fix across all 9 copies: [tauri resource dir verbatim path](https://github.com/stoatworks-labs/fleet-notes/blob/main/notes/reference_tauri_resource_dir_verbatim_path.md). `with_windows_exe()` was not wrong, it just could never fire. Three more Windows defects fixed in the same sweep (console window on spawn, macOS-only config path in the gear button, and two pre-existing tests that fail on Windows because the fixture interpolates a `C:\…` path into a TOML *basic* string where `\U` is an invalid escape — use a literal `'…'` string).
 
 Test box: [win lab vm lilnasx](https://github.com/stoatworks-labs/fleet-notes/blob/main/notes/reference_win_lab_vm_lilnasx.md).
+
+**2026-09-07 — a `[serve]` mode, so a browser tool can be a tray app.** Every one of the fleet's
+browser tools now ships a container image and an Unraid template (stoatworks-unraid), and
+Stoatworks Burrow wants to offer the same tools as standalone tray apps for the venue with no
+internet. The shell had nothing for that: all three modes supervise a *child*, and a static site
+has no process. Bundling a static-server binary beside the site was rejected before it was
+written — it is the §5 Gatekeeper shape (unsigned helper inside a `.app`, SIGKILLed silently on
+a clean Mac), and it would have shipped in twenty apps. So `serve.rs` serves the directory from a
+thread inside the launcher: `tiny_http` (the crate Burrow's own demo server uses), GET/HEAD,
+percent-decode-then-canonicalise traversal checks, the site's Cloudflare `_headers` parsed and
+applied per request path (later rules override earlier, `!` removes, `*` and `:seg` patterns),
+`not_found = "none" | "spa"` matching the fleet's `not_found_handling`, and the `_headers` file
+itself never served. `[app].command` and `[inject]` became optional (`inject` defaults to
+`args`); every shipped config still has both. `AppState` gained a `server` slot beside `child`,
+`shutdown()` stops whichever exists, and `get_status` reaps the server thread the way it reaps
+the child. 12 new tests; 24 total; clippy clean. **Not yet done:** no tool has been released
+this way. The next steps are a `gen-launcher.mjs` in stoatworks-unraid emitting each tool's
+`launcher/` from `fleet.json` (it already knows the served dir and the headers file), a bundle
+with `site/**` in `bundle.resources`, and one tool opened from a *downloaded* build on a clean
+Mac — the only test §5 accepts. Burrow's catalogue must not advertise the install until then.
