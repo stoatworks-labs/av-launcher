@@ -2,9 +2,12 @@
 
 > **AI-assisted project.** This codebase was created with [Claude](https://claude.com/claude-code)
 > (Anthropic), directed and reviewed by a human author. The Rust backend
-> compiles and the panel UI has been exercised via its mock backend; the
-> full tray app has **not yet** been run end-to-end against a live server on
-> the target machine.
+> compiles and the panel UI has been exercised via its mock backend. The tray
+> app has been run on real Windows 11, where Start once did nothing at all —
+> Tauri's resource dir came back as a verbatim `\\?\` path, so no bundled
+> binary resolved — and since v0.2.1 fixed that, Frame Ferret's build of this
+> shell reaches RUNNING there with its embedded server answering. macOS has
+> **not yet** been run end-to-end against a live server on the target machine.
 
 A menu-bar **tray launcher** shell for the local web-server apps in this fleet
 (srt-router, flock, RFutils, …). It gives any of them a small panel to pick a
