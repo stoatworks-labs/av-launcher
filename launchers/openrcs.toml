@@ -1,39 +1,30 @@
-# openrcs — modern control surface for Analog Way Midra/LiveCore processors.
+# openrcs — control surface for Analog Way LiveCore / Midra / PLS300 /
+# LivePremier / Midra 4K / Alta 4K processors.
 # https://github.com/stoatworks-labs/openrcs
 #
 #   AV_LAUNCHER_CONFIG=launchers/openrcs.toml npm run tauri dev
 #
-# openrcs-server takes the switcher's IP + model on the CLI. The launcher
-# collects those as custom fields ([[field]]) and injects them as
-# {device}/{platform}; {host}:{port} is the server's own listen address.
+# Development reference only. The shipped openRCS tray app is built from the
+# copy of this shell in openrcs's own repo (launcher/), by that repo's release
+# workflow, with openrcs-server bundled as a resource — the way flock and
+# srt-router ship theirs. The config there is the one that counts; keep this
+# in step with it.
+#
+# The launcher only chooses where the surface listens: {host}:{port} is the
+# server's own listen address. Which switcher to drive, and which model it is,
+# are set in the surface's Connection view and persisted by the server, so
+# there are no custom fields here to keep in step with its platform list.
 
 [app]
-name = "openrcs"
-command = "/Users/allansargeant/Projects/openrcs/target/release/openrcs-server"
-args = ["--device", "{device}:10500", "--platform", "{platform}", "--listen", "{host}:{port}"]
+name = "openRCS"
+command = "/Users/allansargeant/Projects/video/openrcs/target/debug/openrcs-server"
+args = ["--listen", "{host}:{port}"]
 url = "http://{host}:{port}/"
 default_port = 8730
-cwd = "/Users/allansargeant/Projects/openrcs"
+cwd = "/Users/allansargeant/Projects/video/openrcs"
 
 [inject]
 mode = "args"
-
-# The switcher's IP and model, entered in the panel — no CLI needed.
-[[field]]
-key = "device"
-label = "Switcher IP"
-type = "text"
-placeholder = "192.168.1.42"
-
-[[field]]
-key = "platform"
-label = "Model"
-type = "select"
-default = "livecore"
-options = [
-  { value = "livecore", label = "LiveCore (NeXtage / Ascender)" },
-  { value = "midra", label = "Midra (Pulse2 / Eikos2)" },
-]
 
 # Palette mirrored from openrcs's web UI (near-black + cyan accent).
 [app.theme]
