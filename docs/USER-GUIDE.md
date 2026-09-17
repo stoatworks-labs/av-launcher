@@ -90,8 +90,21 @@ unreadable — every failure there falls back to the default without an error.
 ## Starting and stopping
 - **Pressing Start when it's already running does nothing harmful** — it just reports the current
   status. It does **not** restart the server.
-- **If the server exits on its own**, the panel notices the next time it refreshes status, not
-  instantly.
+- **If Start fails, the panel says why**, in red under the buttons, and keeps saying it until you
+  press Start again, press Stop, or change the interface or port:
+  - *"Port 8080 is already in use: another program is listening on it — perhaps flock is
+    already running."* Something else holds the port — often another copy of this app (a
+    second launcher, or the server started by hand). **Open** still works, so you can see
+    what is there; otherwise stop it or pick a different port.
+  - *"This computer refuses port 80…"* — the operating system reserves it or wants
+    administrator rights. Choose a port above 1023.
+  - *"…is not an address of this computer right now"* — the interface you chose has gone
+    (cable out, Wi-Fi moved). Choose another.
+  - *"The flock server exited right after starting (exit code 1). Its last output is below."*
+    — the server itself failed, and its last lines are shown so you can see what it said. On
+    macOS, *"killed by signal 9"* with no output is the Gatekeeper trap above.
+- **If the server exits on its own later**, the panel notices the next time it refreshes status
+  (within a couple of seconds), and reports it the same way.
 - **Stop and Quit kill the process outright.** There's no graceful shutdown, so an app that
   writes state on exit may not get the chance. Stop the server before unplugging anything it was
   writing to.
@@ -107,7 +120,7 @@ unreadable — every failure there falls back to the default without an error.
 | **URL shows an IP I didn't pick** | You chose "All interfaces", so it shows your primary non-loopback IP to keep the link clickable ([Interface and port](#interface-and-port)). |
 | **Others on the network can reach it** | "All interfaces" binds `0.0.0.0` ([Interface and port](#interface-and-port)). |
 | **Closed the panel and the app kept serving** | That's Hide. Quit stops it ([Using the panel](#using-the-panel)). |
-| **Start did nothing** | It was already running ([Starting and stopping](#starting-and-stopping)). |
+| **Start did nothing** | It was already running ([Starting and stopping](#starting-and-stopping)). Anything else that stops a start is now written under the buttons — a held port, a refused port, a server that died and what it said. |
 | **The app lost unsaved state on Quit** | Quit kills the child; there's no graceful shutdown ([Starting and stopping](#starting-and-stopping)). |
 
 ---

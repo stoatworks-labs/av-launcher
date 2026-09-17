@@ -74,10 +74,46 @@ shape §5 describes, multiplied by twenty tools. `AppState` holds either a
 rather than believed. `[app].command` and `[inject]` became optional for this
 and every shipped child-process config still spells both out.
 
+## 5b. A start that fails says so — the failure lives in the backend
+
+`AppState` holds a `failure: Option<Failure>` beside the child/server slot, and `Status`
+carries it to the panel. It exists because the panel polls `get_status` every two seconds
+and re-renders from scratch: anything it merely *flashed* was gone on the next poll, which
+is how "port already in use" used to look like Start doing nothing. The rules:
+
+- `start_server` returns a **Stopped status carrying the failure**, not an `Err`. `Err` is
+  for the launcher's own trouble (unreadable config, poisoned lock).
+- Before spawning anything, `probe_bind` binds the exact host:port the server will bind and
+  drops it. It mirrors the server's own bind (std sets `SO_REUSEADDR` on Unix, as Node/Go/
+  Python/every Rust server do), so it predicts the server's outcome rather than asserting
+  its own. Wording comes from `io::ErrorKind`, never from the port number: macOS binds port
+  80 unprivileged since 10.14, and Windows answers `EACCES` for ports another program holds
+  exclusively.
+- After spawning, `watch_startup` watches for up to 1.5 s: exit → quoted with exit status
+  and output tail; answering on loopback → Running; neither → Running (the poll keeps
+  watching). Readiness is checked through **loopback only** — connecting to one of this
+  machine's LAN addresses is a local-network operation under macOS local network privacy
+  (TN3179) and would prompt.
+- The child's stdout/stderr are piped into `OutputTail` and **drained continuously** on
+  their own threads. Never pipe a child's output without reading it: at 64 KiB the child
+  blocks on write.
+- `get_status` reaping a dead child records the same kind of failure, so a server that dies
+  later is reported too. `fail()` also logs through `tracing`, so the diag file has it.
+- Cleared by the next Start, by Stop, and by `save_settings` (the failure was about the old
+  choice).
+- The panel enables **Open** when `failure.port_busy`, since the thing on the port may well
+  be this app; it grows the window (`fit_panel`) to show an output tail and shrinks back.
+
+The commands are tested against `tauri::test::mock_builder()` with a real config and a
+stand-in `sh` server (`tests::commands` in lib.rs), which is why every function taking an
+`AppHandle` is generic over `tauri::Runtime`. Keep it that way.
+
 ## 6. Status
 
-The Rust backend compiles and the panel UI has been exercised **via its mock backend**. The
-full tray app has **not** been run end-to-end against a live server on the target machine.
+The Rust backend compiles, the command layer runs under Tauri's mock runtime in `cargo
+test`, and the panel UI has been exercised **via its mock backend**. The full tray app has
+**not** been run end-to-end against a live server on the target machine from this repo
+(the fleet copies have — see the fleet notes).
 
 Given §5, that gap matters: the untested path is exactly the one where the Gatekeeper problem
 shows up.

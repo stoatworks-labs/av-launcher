@@ -49,3 +49,27 @@ this way. The next steps are a `gen-launcher.mjs` in stoatworks-unraid emitting 
 `launcher/` from `fleet.json` (it already knows the served dir and the headers file), a bundle
 with `site/**` in `bundle.resources`, and one tool opened from a *downloaded* build on a clean
 Mac — the only test §5 accepts. Burrow's catalogue must not advertise the install until then.
+
+**2026-09-17 — Start that fails now says why (port in use, server died).** Two silent
+failures, found with openRCS at a show where a hand-run server held port 1432 and the tray
+app's Start did nothing. (1) A child that could not bind exited within milliseconds, but
+`start_server` reported Running the instant the spawn succeeded and the next poll quietly
+said Stopped; its stderr was inherited, which for a Finder-launched app means /dev/null.
+(2) The static mode *did* return a bind error, but the panel only flashed it and the
+two-second poll wiped it. Fixed in the shell: a bind probe before spawning (mirrors the
+server's own bind — verified on this Mac that std's `SO_REUSEADDR` lets a wildcard bind sit
+beside a loopback listener, and that port 80 binds unprivileged, so wording follows
+`io::ErrorKind` not the port number); the child's stdout/stderr piped into a 30-line tail
+drained on its own threads; a 1.5 s watch after spawn (exit → quoted; loopback answers →
+Running); the failure held in `AppState` and carried by `Status.failure` so the poll keeps
+showing it; `Open` enabled when the port is busy; the window grows to show an output tail
+(`fit_panel`, top-left pinned because `setContentSize` holds the bottom-left on macOS) and
+shrinks back. Every `AppHandle`-taking function became generic over `tauri::Runtime` so the
+commands run under `tauri::test::mock_builder()` with a stand-in `sh` server — 18 new tests,
+42 total. **Traps:** two processes named `av-launcher` (openRCS.app + a dev build) make
+System Events re-resolve `first process whose unix id is N` to the wrong twin by name; from
+this session System Events saw zero windows for *every* app (Chrome included), so the
+on-screen run of a real launcher was not done here — the fleet copies are proven by the
+mock-runtime tests and the browser mock (`?fail=port`, `?fail=exit` in main.js). Readiness
+is probed on loopback only: TN3179 makes a TCP connect to one of this machine's own LAN
+addresses a local-network operation.

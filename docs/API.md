@@ -75,8 +75,11 @@ launcher matches its app's own web UI.
 
 ## 2. Tauri command API
 
-The frontend (`src/main.js`) reaches the Rust shell through ten commands. Everything returns
-`Result<_, String>` unless noted — errors surface as a flash message in the panel.
+The frontend (`src/main.js`) reaches the Rust shell through eleven commands. Everything returns
+`Result<_, String>` unless noted — an `Err` is the launcher's own trouble (unreadable config,
+poisoned lock) and surfaces as a flash message. A *start that fails* is not an `Err`: it is a
+Stopped `Status` carrying a `failure`, which the panel shows until the next Start, Stop or
+settings change (see below).
 
 | Command | Returns | Notes |
 |---|---|---|
@@ -88,18 +91,30 @@ The frontend (`src/main.js`) reaches the Rust shell through ten commands. Everyt
 | `start_server` | `Status` | |
 | `stop_server` | `Status` | |
 | `open_gui` | — | opens the resolved URL in the default browser |
+| `fit_panel(height)` | — | resizes the panel window to `height` logical px, keeping its width and top-left; the panel grows to show a failure's output and shrinks back |
 | `hide_window` | — | **infallible** |
 | `quit_app` | — | **infallible**; kills the child first |
 
-`Status` is `{ running, url, host, port, message }` — the whole panel state in one object, so
-the UI re-renders from a single value after every action.
+`Status` is `{ running, url, host, port, message, failure }` — the whole panel state in one
+object, so the UI re-renders from a single value after every action. `failure` is `null` while
+nothing is wrong, else `{ message, detail, port_busy }`: one or two sentences for the operator,
+the server's last output lines (empty when it wrote none), and whether the chosen port is held
+by something else — in which case the panel keeps **Open** enabled, since what is listening
+there is often this app already running.
 
 Behaviours a caller depends on:
 
 - **`start_server` on an already-running server reports the current status instead of
   double-spawning.** It is safe to call twice; it does not restart.
+- **`start_server` probes the port before spawning.** A bind refused by the OS comes back as
+  a failure worded by `io::ErrorKind` (in use / reserved or needs administrator rights /
+  address not on this machine) with nothing spawned. It then watches the server for up to
+  1.5 s: an exit is reported with its status and the tail of its output; answering on
+  loopback ends the wait early.
 - **`get_status` reaps the child** — it calls `try_wait()`, so a server that exited on its own is
-  detected the next time status is polled, not silently left showing as running.
+  detected the next time status is polled, not silently left showing as running — and is
+  reported as a failure, with its exit status and last output, until Start, Stop or a settings
+  change clears it. Every failure is also logged through `tracing`.
 - **`stop_server` and `quit_app` kill the child.** There is no graceful-shutdown signal; the
   supervised server gets no chance to clean up.
 - **`open_gui` resolves the URL fresh** rather than using the last-rendered one.

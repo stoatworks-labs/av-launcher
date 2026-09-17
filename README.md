@@ -24,6 +24,7 @@ app, not a bundled browser.
     <td align="center"><img src="docs/screenshots/panel-srt-router.png" width="260" alt="Launcher panel themed for SRT Router (running)"><br><sub>srt-router · running</sub></td>
     <td align="center"><img src="docs/screenshots/panel-flock.png" width="260" alt="Launcher panel themed for flock (running)"><br><sub>flock · running</sub></td>
     <td align="center"><img src="docs/screenshots/panel-rfutils.png" width="260" alt="Launcher panel themed for RFutils (stopped)"><br><sub>RFutils · stopped</sub></td>
+    <td align="center"><img src="docs/screenshots/panel-flock-port-busy.png" width="260" alt="Launcher panel for flock after Start found port 8080 already in use"><br><sub>flock · port already in use</sub></td>
   </tr>
 </table>
 
@@ -130,6 +131,20 @@ new-app checklist.
 - **Port** — persisted per app.
 - **Start / Stop** — spawns/kills the server child process and supervises it
   (detects if it exits on its own).
+- **When Start fails, the panel says why**, and keeps saying it until the next
+  Start, Stop or settings change:
+  - *port already in use* — checked before anything is spawned, so the answer
+    is on the click: "Port 8080 is already in use: another program is
+    listening on it — perhaps flock is already running. Stop that, or choose a
+    different port." **Open** stays available, because what is listening there
+    is quite often this very app, started some other way.
+  - *port refused by the OS* (reserved, or needs administrator rights) and
+    *interface address gone* get their own sentences.
+  - *the server exits right after starting* (its own bind failed, its runtime is
+    missing, Gatekeeper killed it) — the launcher watches its first moments and
+    reports the exit status with the last lines it wrote. A server that dies
+    later is reported the same way by the status poll. The same text goes to
+    the diagnostics log.
 - **Launch GUI** — opens the resolved URL in your default browser.
 - **Hide** — hides to the tray; **Quit** — stops the server and exits.
 - Interface/port are locked while the server is running.
@@ -183,8 +198,10 @@ On Windows, clearing SmartScreen needs an Authenticode code-signing certificate.
 ## Tests
 
 ```bash
-cd src-tauri && cargo test  # covers host:port injection for all three modes,
-                            # incl. flock (top-level bind) vs srt-router (web.bind)
+cd src-tauri && cargo test  # host:port injection for all three modes (incl. flock's
+                            # top-level bind vs srt-router's web.bind), the static
+                            # server, and the Start/Stop/status commands run against
+                            # Tauri's mock runtime with a stand-in server process
 ```
 
 ## Documentation

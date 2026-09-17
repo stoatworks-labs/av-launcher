@@ -111,9 +111,22 @@ than it looks, because it becomes part of the contract all three consumers depen
 - **`start_server` is idempotent-ish**: called on an already-running server it reports current
   status rather than double-spawning. Keep that — the panel calls it on a toggle.
 - **`get_status` reaps the child** via `try_wait()`, so a server that exited on its own is
-  detected on the next poll. Removing that makes the panel lie.
-- **`Status` carries the whole panel state** (`running`, `url`, `host`, `port`, `message`) so the
-  UI re-renders from one value after every action. Don't split it.
+  detected on the next poll — and reported, with exit status and output tail, as a `failure`.
+  Removing that makes the panel lie.
+- **A start that fails comes back as a Stopped `Status` with a `failure`, not an `Err`**, and
+  the failure lives in `AppState` until Start, Stop or a settings change clears it. The panel
+  polls every two seconds and re-renders from scratch; anything it only flashes is gone on
+  the next poll, which is how a port clash used to look like Start doing nothing.
+- **`start_server` probes the port before spawning and watches the child for 1.5 s after.**
+  The probe mirrors the server's own bind (std sets `SO_REUSEADDR`); readiness is checked on
+  loopback only — a connect to this machine's LAN address is a local-network operation under
+  macOS local network privacy. The child's stdout/stderr are piped and drained continuously;
+  never pipe a child's output without a reader.
+- **`Status` carries the whole panel state** (`running`, `url`, `host`, `port`, `message`,
+  `failure`) so the UI re-renders from one value after every action. Don't split it.
+- **Every function taking an `AppHandle` is generic over `tauri::Runtime`**, so the commands
+  run under `tauri::test::mock_builder()` in `cargo test` (`tests::commands`). Keep new ones
+  generic too.
 - **Settings load falls back to defaults on every failure path** — unresolvable config dir,
   missing file, unparseable JSON. That's deliberate (a corrupt settings file shouldn't brick the
   launcher) and it means **a reset port is silent**. Documented in
