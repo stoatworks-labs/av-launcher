@@ -105,9 +105,11 @@ unreadable — every failure there falls back to the default without an error.
     macOS, *"killed by signal 9"* with no output is the Gatekeeper trap above.
 - **If the server exits on its own later**, the panel notices the next time it refreshes status
   (within a couple of seconds), and reports it the same way.
-- **Stop and Quit kill the process outright.** There's no graceful shutdown, so an app that
-  writes state on exit may not get the chance. Stop the server before unplugging anything it was
-  writing to.
+- **Stop and Quit ask the server to shut down, then make sure it has.** On macOS and Linux the
+  server is sent SIGTERM and given 3 seconds to save its state and stop anything it started;
+  only a server still running after that is killed outright. On Windows the server is ended at
+  once — there is no equivalent request to send it — so an app that writes state on exit may
+  not get the chance there.
 
 ---
 
@@ -121,7 +123,7 @@ unreadable — every failure there falls back to the default without an error.
 | **Others on the network can reach it** | "All interfaces" binds `0.0.0.0` ([Interface and port](#interface-and-port)). |
 | **Closed the panel and the app kept serving** | That's Hide. Quit stops it ([Using the panel](#using-the-panel)). |
 | **Start did nothing** | It was already running ([Starting and stopping](#starting-and-stopping)). Anything else that stops a start is now written under the buttons — a held port, a refused port, a server that died and what it said. |
-| **The app lost unsaved state on Quit** | Quit kills the child; there's no graceful shutdown ([Starting and stopping](#starting-and-stopping)). |
+| **The app lost unsaved state on Quit** | On Windows Quit ends the server at once; on macOS/Linux the server had 3 seconds after SIGTERM and did not finish in time ([Starting and stopping](#starting-and-stopping)). |
 
 ---
 

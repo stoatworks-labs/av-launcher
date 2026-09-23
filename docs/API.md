@@ -115,8 +115,10 @@ Behaviours a caller depends on:
   detected the next time status is polled, not silently left showing as running — and is
   reported as a failure, with its exit status and last output, until Start, Stop or a settings
   change clears it. Every failure is also logged through `tracing`.
-- **`stop_server` and `quit_app` kill the child.** There is no graceful-shutdown signal; the
-  supervised server gets no chance to clean up.
+- **`stop_server` and `quit_app` stop the child gracefully on Unix**: SIGTERM, up to 3 s
+  (`STOP_GRACE`) polling `try_wait`, then SIGKILL. Every exit path — Stop, the panel's Quit, the
+  tray's Quit, ⌘Q and Dock quit (`RunEvent::ExitRequested`/`Exit`) — goes through
+  `AppState::shutdown()`, so they all behave the same. Windows keeps `TerminateProcess`.
 - **`open_gui` resolves the URL fresh** rather than using the last-rendered one.
 
 `Interface` is `{ name, ip, label }`, where `name` is an interface (`en0`) **or the literal

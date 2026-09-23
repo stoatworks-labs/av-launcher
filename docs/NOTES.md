@@ -73,3 +73,18 @@ on-screen run of a real launcher was not done here — the fleet copies are prov
 mock-runtime tests and the browser mock (`?fail=port`, `?fail=exit` in main.js). Readiness
 is probed on loopback only: TN3179 makes a TCP connect to one of this machine's own LAN
 addresses a local-network operation.
+
+**2026-09-23 — Stop and Quit send SIGTERM first.** Every stop used std's `Child::kill()`, which is
+SIGKILL on Unix: the server could not flush state, and whatever *it* had spawned was reparented
+to launchd and kept running. packrat found it the hard way — its `rclone rcd` child and rclone
+mounts outlived every Stop — and had to grow a self-re-exec guard process to survive the shell.
+`stop_child` now sends SIGTERM via `libc::kill`, polls `try_wait` for up to `STOP_GRACE` (3 s),
+then falls back to `kill()`; `shutdown()` takes the child out of its lock first so a status poll
+during the grace is not queued behind it. All exit paths already funnelled into `shutdown()`
+since 2c83ad7, so one function covers Stop, both Quits, ⌘Q and Dock quit. Windows unchanged:
+`GenerateConsoleCtrlEvent` needs a console shared with the child, and a `CREATE_NO_WINDOW` child
+has its own. Proven by `cargo test` (a fake server whose TERM trap stops its own child and writes
+a marker, under the mock runtime; plus SIGTERM/SIGKILL-fallback unit tests, all failing when the
+signal is swapped back to SIGKILL) and by the real debug binary against a Python trap server,
+driven through System Events: Stop button, panel Quit, app-menu Quit (⌘Q's action) and tray Quit
+each left the marker and no orphaned child.

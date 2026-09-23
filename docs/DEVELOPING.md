@@ -131,8 +131,10 @@ than it looks, because it becomes part of the contract all three consumers depen
   missing file, unparseable JSON. That's deliberate (a corrupt settings file shouldn't brick the
   launcher) and it means **a reset port is silent**. Documented in
   [USER-GUIDE.md](USER-GUIDE.md); if you add a warning, update it.
-- **`stop_server` / `quit_app` kill the child outright.** There's no graceful shutdown. If a
-  consuming app ever needs one, that's a contract change affecting all three.
+- **`stop_server` / `quit_app` send SIGTERM, then SIGKILL after 3 s** (`stop_child`, Unix
+  only; Windows still terminates outright). A server has that long to save state and stop its
+  own children — a supervised server that spawns helpers (packrat's `rclone rcd` and mounts)
+  should stop them on SIGTERM rather than rely on being killed.
 - **`cwd` defaults to the binary's directory**, and both config-file apps override it to their
   repo root so their relative paths resolve. Don't change the default without checking those.
 
