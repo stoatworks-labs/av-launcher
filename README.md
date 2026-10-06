@@ -35,15 +35,15 @@ panel HTML/CSS via [`scripts/screenshot.sh`](scripts/screenshot.sh) (headless Ch
 
 ## Download
 
-**[v0.3.1](https://github.com/stoatworks-labs/av-launcher/releases/tag/v0.3.1)** — prebuilt for macOS, Windows and Linux. Pick your platform:
+**[v0.3.2](https://github.com/stoatworks-labs/av-launcher/releases/tag/v0.3.2)** — prebuilt for macOS, Windows and Linux. Pick your platform:
 
 <details>
 <summary><b>macOS</b> — Universal (Apple Silicon + Intel)</summary>
 
 | Build | Download | Size |
 | --- | --- | --- |
-| Universal (Apple Silicon + Intel) · .dmg disk image | [`av-launcher-0.3.1-macos-universal.dmg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.1/av-launcher-0.3.1-macos-universal.dmg) | 8.0 MB |
-| Universal (Apple Silicon + Intel) · .pkg installer | [`av-launcher-0.3.1-macos-universal.pkg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.1/av-launcher-0.3.1-macos-universal.pkg) | 8.0 MB |
+| Universal (Apple Silicon + Intel) · .dmg disk image | [`av-launcher-0.3.2-macos-universal.dmg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.2/av-launcher-0.3.2-macos-universal.dmg) | 8.1 MB |
+| Universal (Apple Silicon + Intel) · .pkg installer | [`av-launcher-0.3.2-macos-universal.pkg`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.2/av-launcher-0.3.2-macos-universal.pkg) | 8.2 MB |
 
 </details>
 
@@ -52,8 +52,8 @@ panel HTML/CSS via [`scripts/screenshot.sh`](scripts/screenshot.sh) (headless Ch
 
 | Build | Download | Size |
 | --- | --- | --- |
-| x64 · .exe installer | [`AV.Launcher_0.3.1_x64-setup.exe`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.1/AV.Launcher_0.3.1_x64-setup.exe) | 2.6 MB |
-| x64 · .msi installer | [`AV.Launcher_0.3.1_x64_en-US.msi`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.1/AV.Launcher_0.3.1_x64_en-US.msi) | 4.0 MB |
+| x64 · .exe installer | [`AV.Launcher_0.3.2_x64-setup.exe`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.2/AV.Launcher_0.3.2_x64-setup.exe) | 2.7 MB |
+| x64 · .msi installer | [`AV.Launcher_0.3.2_x64_en-US.msi`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.2/AV.Launcher_0.3.2_x64_en-US.msi) | 4.1 MB |
 
 </details>
 
@@ -62,8 +62,8 @@ panel HTML/CSS via [`scripts/screenshot.sh`](scripts/screenshot.sh) (headless Ch
 
 | Build | Download | Size |
 | --- | --- | --- |
-| x64 · .deb package (Debian/Ubuntu) | [`AV.Launcher_0.3.1_amd64.deb`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.1/AV.Launcher_0.3.1_amd64.deb) | 5.3 MB |
-| x64 · AppImage | [`AV.Launcher_0.3.1_amd64.AppImage`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.1/AV.Launcher_0.3.1_amd64.AppImage) | 83 MB |
+| x64 · .deb package (Debian/Ubuntu) | [`AV.Launcher_0.3.2_amd64.deb`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.2/AV.Launcher_0.3.2_amd64.deb) | 5.4 MB |
+| x64 · AppImage | [`AV.Launcher_0.3.2_amd64.AppImage`](https://github.com/stoatworks-labs/av-launcher/releases/download/v0.3.2/AV.Launcher_0.3.2_amd64.AppImage) | 84 MB |
 
 </details>
 
