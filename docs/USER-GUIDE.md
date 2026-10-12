@@ -35,7 +35,11 @@ The apps built on it ship signing notes of their own. See each app's `launcher/S
 ### What has and hasn't been tested
 
 The Rust backend compiles and the panel UI has been exercised **through its mock backend**.
-**The full tray app hasn't been run end to end against a live server on the target machine.**
+The tray app has been run on real Windows 11, where Start once did nothing at all (Tauri's
+resource dir came back as a verbatim `\\?\` path, so no bundled binary resolved). v0.2.1 fixed
+that, and since then Frame Ferret's build of this shell reaches RUNNING there with its embedded
+server answering. **On macOS the full tray app hasn't been run end to end against a live
+server on the target machine.**
 
 Given the above, that gap matters: **the untested path is the very one where the Gatekeeper
 problem shows up.**

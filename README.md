@@ -238,12 +238,14 @@ src-tauri/
 
 ## Unsigned builds — Gatekeeper, SmartScreen & Defender Firewall
 
-The release binaries are **not code-signed or notarized**, because that needs paid Apple
-and Microsoft developer certificates this project doesn't carry. The downloads are
-fine; the OS just can't identify the publisher, so it warns you the first time.
+The macOS release builds are Developer ID-signed and notarised, so they open without a
+warning. The Windows builds **aren't code-signed**, because that needs a Microsoft
+code-signing certificate this project doesn't carry. The downloads are fine; Windows just
+can't identify the publisher, so it warns you the first time.
 
-- **macOS:** *"cannot be opened because the developer cannot be verified"*.
-  Right-click the app → **Open** → **Open**, or clear the flag:
+- **macOS:** a released `.dmg` or `.pkg` opens normally. A copy you built yourself, or a
+  download from before the releases were signed, says *"cannot be opened because the
+  developer cannot be verified"*. Right-click the app → **Open** → **Open**, or clear the flag:
   `xattr -dr com.apple.quarantine "/Applications/AV Launcher.app"`
 - **Windows:** SmartScreen shows *"Windows protected your PC"* →
   **More info** → **Run anyway**.

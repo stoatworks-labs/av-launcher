@@ -44,8 +44,10 @@ is no visible error.**
 
 ## 3. Status — and why the gap matters
 
-The Rust backend compiles and the panel UI has been exercised **via its mock backend**. **The
-full tray app has not been run end-to-end against a live server on the target machine.**
+The Rust backend compiles and the panel UI has been exercised **via its mock backend**. The
+tray app has been run on real Windows 11: since v0.2.1, Frame Ferret's build of this shell
+reaches RUNNING there with its embedded server answering. **On macOS the full tray app has not
+been run end-to-end against a live server on the target machine.**
 
 > Given §2, that gap matters: **the untested path is exactly the one where the Gatekeeper problem
 > shows up.**
