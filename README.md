@@ -1,23 +1,22 @@
 # av-launcher
 
 > **AI-assisted project.** This codebase was created with [Claude](https://claude.com/claude-code)
-> (Anthropic), directed and reviewed by a human author. The Rust backend
-> compiles and the panel UI has been exercised via its mock backend. The tray
-> app has been run on real Windows 11, where Start once did nothing at all —
-> Tauri's resource dir came back as a verbatim `\\?\` path, so no bundled
-> binary resolved — and since v0.2.1 fixed that, Frame Ferret's build of this
-> shell reaches RUNNING there with its embedded server answering. macOS has
-> **not yet** been run end-to-end against a live server on the target machine.
+> (Anthropic), directed and reviewed by a human author. The Rust backend compiles and the
+> panel UI has been exercised through its mock backend. The tray app has been run on real
+> Windows 11, where Start once did nothing at all (Tauri's resource dir came back as a
+> verbatim `\\?\` path, so no bundled binary resolved). v0.2.1 fixed that, and since then
+> Frame Ferret's build of this shell reaches RUNNING there with its embedded server answering.
+> macOS has **not yet** been run end to end against a live server on the target machine.
 
 A menu-bar **tray launcher** shell for the local web-server apps in this fleet
 (srt-router, flock, RFutils, …). It gives any of them a small panel to pick a
 **network interface** and **port**, **Start/Stop** the server, **Open** the web
-UI, and live in the **system tray** — without each app building its own.
+UI, and live in the **system tray**, so each app doesn't have to build its own.
 
-The panel is an original card design that **themes itself to each app's own web
-UI** (palette carried in `launcher.toml`), built with
-[Tauri v2](https://tauri.app) (Rust + a tiny HTML/CSS/JS panel) — a small native
-app, not a bundled browser.
+The panel is a card design of my own that **themes itself to match each app's web
+UI** (the palette lives in `launcher.toml`). It's built with
+[Tauri v2](https://tauri.app) (Rust and a tiny HTML/CSS/JS panel), so it's a small
+native app rather than a bundled browser.
 
 <table>
   <tr>
@@ -28,8 +27,8 @@ app, not a bundled browser.
   </tr>
 </table>
 
-*The same shell, themed per app from `launcher.toml`. Rendered from the exact
-panel HTML/CSS via [`scripts/screenshot.sh`](scripts/screenshot.sh) (headless Chrome).*
+*The same shell, themed per app from `launcher.toml`. Rendered from the panel's own
+HTML/CSS with [`scripts/screenshot.sh`](scripts/screenshot.sh) (headless Chrome).*
 
 <!-- downloads:start -->
 
@@ -76,8 +75,8 @@ macOS builds are signed and notarised and open normally. The Windows builds are 
 ## Shipped apps
 
 Each fleet app ships this shell as its **own desktop app**, with the server
-embedded so the download is one self-contained thing (no linking, nothing to
-install). Built and released from each repo:
+embedded so the download is one self-contained thing (nothing to link and nothing
+to install). Each is built and released from its own repo:
 
 | app | source | download | server embedding |
 | --- | --- | --- | --- |
@@ -85,9 +84,9 @@ install). Built and released from each repo:
 | flock | [`launcher/`](https://github.com/stoatworks-labs/flock/tree/main/launcher) | [v0.1.0](https://github.com/stoatworks-labs/flock/releases/tag/v0.1.0) | native binary bundled |
 | RFutils | [`launcher/`](https://github.com/stoatworks-labs/RFutils/tree/main/launcher) | [v0.1.0](https://github.com/stoatworks-labs/RFutils/releases/tag/v0.1.0) | Node runtime + app embedded |
 
-This repo remains the canonical template/shell. A shipped `.app` finds its
-baked-in config, theme, and server (a native binary, or an embedded Node runtime
-+ ESM bundle) via bundled resources — the `{resource}` placeholder in
+This repo is still the canonical template and shell. A shipped `.app` finds its
+baked-in config, theme and server (a native binary, or an embedded Node runtime
++ ESM bundle) among its bundled resources, and the `{resource}` placeholder in
 `launcher.toml` points at them. See [`scripts/screenshot.sh`](scripts/screenshot.sh)
 for how the README panel images are rendered.
 
@@ -96,7 +95,7 @@ for how the README panel images are rendered.
 The launcher itself is **app-agnostic**. It supervises a child process and
 knows nothing about any particular server. Each app it can launch is described
 by a single [`src-tauri/launcher.toml`](src-tauri/launcher.toml), which says how
-to start the binary and — the important part — **how to inject the chosen
+to start the binary and, more importantly, **how to inject the chosen
 `host:port`**. Three modes cover the whole fleet:
 
 | mode | what it does | fleet example |
@@ -105,16 +104,16 @@ to start the binary and — the important part — **how to inject the chosen
 | `env` | sets environment variables | **RFutils** (`RFUTILS_SERVER_PORT` / `RFUTILS_HOST`) |
 | `args` | `{host}`/`{port}` placeholders already in `[app].args` | **WebLinked** (`--bind` / `--port`, plus `--headless`) |
 
-A fourth kind of app has nothing to launch. The fleet's browser tools are static
-pages, and a tray app for one needs something to *serve* `dist/` rather than a
-process to supervise — so `[serve] mode = "static"` serves a bundled directory
+There's a fourth kind of app with nothing to launch. The fleet's browser tools are static
+pages, and a tray app for one of those needs something to *serve* `dist/` rather than a
+process to supervise. So `[serve] mode = "static"` serves a bundled directory
 from inside the launcher itself, on the same interface and port, honouring the
 site's `_headers`. Nothing is spawned, which matters on macOS: a static-server
 helper bundled beside the site would be quarantined with the app and killed
-silently. See [docs/adding-an-app.md](docs/adding-an-app.md#a-static-site-instead-of-a-server-serve).
+without a word. See [docs/adding-an-app.md](docs/adding-an-app.md#a-static-site-instead-of-a-server-serve).
 
 Ready-made configs for each app live in [`launchers/`](launchers/). To point the
-launcher at one you only pick a config and swap the icon — no Rust changes.
+launcher at one you just pick a config and swap the icon, with no Rust changes.
 (A future version can ship one bundled app per fleet member, each with its own
 baked-in `launcher.toml` + icon.)
 
@@ -123,31 +122,31 @@ new-app checklist.
 
 ### What the panel does
 
-- **GUI Interface** dropdown — every bindable IPv4 interface, plus an
+- **GUI Interface** dropdown: every bindable IPv4 interface, plus an
   "All interfaces (0.0.0.0)" entry. Choosing a specific interface binds to that
   IP and shows it in the URL; "All" binds `0.0.0.0` and shows your primary LAN IP.
-- **Port** — persisted per app.
-- **Start / Stop** — spawns/kills the server child process and supervises it
-  (detects if it exits on its own).
+- **Port:** remembered per app.
+- **Start / Stop:** spawns or kills the server child process and supervises it
+  (it notices if it exits on its own).
 - **When Start fails, the panel says why**, and keeps saying it until the next
   Start, Stop or settings change:
-  - *port already in use* — checked before anything is spawned, so the answer
-    is on the click: "Port 8080 is already in use: another program is
+  - *port already in use*: checked before anything is spawned, so you get the answer
+    on the click: "Port 8080 is already in use: another program is
     listening on it — perhaps flock is already running. Stop that, or choose a
     different port." **Open** stays available, because what is listening there
     is quite often this very app, started some other way.
   - *port refused by the OS* (reserved, or needs administrator rights) and
     *interface address gone* get their own sentences.
   - *the server exits right after starting* (its own bind failed, its runtime is
-    missing, Gatekeeper killed it) — the launcher watches its first moments and
+    missing, Gatekeeper killed it): the launcher watches its first moments and
     reports the exit status with the last lines it wrote. A server that dies
     later is reported the same way by the status poll. The same text goes to
     the diagnostics log.
-- **Launch GUI** — opens the resolved URL in your default browser.
-- **Hide** — hides to the tray; **Quit** — stops the server and exits.
-- Interface/port are locked while the server is running.
+- **Launch GUI:** opens the resolved URL in your default browser.
+- **Hide** hides it to the tray; **Quit** stops the server and exits.
+- Interface and port are locked while the server is running.
 
-Settings persist to the OS app-config dir
+Settings are saved to the OS app-config dir
 (`~/Library/Application Support/com.allansargeant.av-launcher/` on macOS), along
 with the rendered config the launcher hands to the server.
 
@@ -160,11 +159,11 @@ npm run tauri dev           # launches the panel + tray
 ```
 
 `launcher.toml` is read from the working directory (`src-tauri/` under
-`tauri dev`), or from `$AV_LAUNCHER_CONFIG`, or next to the built executable.
+`tauri dev`), or from `$AV_LAUNCHER_CONFIG`, or from next to the built executable.
 
 The bundled `launcher.toml` targets srt-router and expects its debug binary at
-`~/Projects/srt-router/target/debug/srtrouter` — build it once with
-`cargo build` in that repo (or edit `command`/`cwd` to taste).
+`~/Projects/srt-router/target/debug/srtrouter`, so build that once with
+`cargo build` in that repo (or edit `command`/`cwd` to suit).
 
 To target another fleet app, point at its config in [`launchers/`](launchers/):
 
@@ -179,19 +178,19 @@ AV_LAUNCHER_CONFIG=launchers/rfutils.toml npm run tauri dev   # RFutils
 npm run tauri build         # produces a .app / .dmg (macOS), etc.
 ```
 
-By default the `.app`/`.dmg`/`.exe` this produces is **not code-signed or
-notarized**, so macOS and Windows will each warn once — see
+By default the `.app`/`.dmg`/`.exe` this produces **isn't code-signed or
+notarized**, so macOS and Windows will each warn once. See
 [Unsigned builds](#unsigned-builds--gatekeeper-smartscreen--defender-firewall)
 below, and [docs/UNSIGNED.md](docs/UNSIGNED.md) for the full walkthrough.
 
-**Signing it yourself:** Tauri signs + notarizes automatically when you set the
-Apple credentials as env vars / GitHub Actions secrets — `APPLE_CERTIFICATE`,
+**Signing it yourself:** Tauri signs and notarizes automatically when you set the
+Apple credentials as env vars or GitHub Actions secrets: `APPLE_CERTIFICATE`,
 `APPLE_CERTIFICATE_PASSWORD`, `APPLE_SIGNING_IDENTITY`, `APPLE_ID`,
 `APPLE_PASSWORD`, `APPLE_TEAM_ID`. RFutils' desktop app (which is built on this
 shell) documents the full flow in
 [its `launcher/SIGNING.md`](https://github.com/stoatworks-labs/RFutils/blob/main/launcher/SIGNING.md).
 For an *ad-hoc* local-only signature: `codesign --force --deep --sign - "<App>.app"`.
-On Windows, clearing SmartScreen needs an Authenticode code-signing certificate.
+On Windows, getting past SmartScreen needs an Authenticode code-signing certificate.
 
 ## Tests
 
@@ -219,9 +218,9 @@ cd src-tauri && cargo test  # host:port injection for all three modes (incl. flo
    `[inject]` block. Full guide: [docs/adding-an-app.md](docs/adding-an-app.md).
 3. Replace `src-tauri/icons/` with the app's icon
    (`npm run tauri icon path/to/icon.png` regenerates all sizes).
-4. **Rewrite the string in [`src-tauri/Info.plist`](src-tauri/Info.plist)** to
-   name the app and say what it does on the network. Without that key a
-   double-clicked macOS app is denied local network traffic *silently* — the
+4. **Rewrite the string in [`src-tauri/Info.plist`](src-tauri/Info.plist)** so it
+   names the app and says what it does on the network. Without that key, a
+   double-clicked macOS app is denied local network traffic *silently*. The
    file explains why no test catches it.
 
 ## Layout
@@ -239,21 +238,21 @@ src-tauri/
 
 ## Unsigned builds — Gatekeeper, SmartScreen & Defender Firewall
 
-The release binaries are **not code-signed or notarized** — that needs paid Apple
+The release binaries are **not code-signed or notarized**, because that needs paid Apple
 and Microsoft developer certificates this project doesn't carry. The downloads are
 fine; the OS just can't identify the publisher, so it warns you the first time.
 
-- **macOS** — *"cannot be opened because the developer cannot be verified"*.
+- **macOS:** *"cannot be opened because the developer cannot be verified"*.
   Right-click the app → **Open** → **Open**, or clear the flag:
   `xattr -dr com.apple.quarantine "/Applications/AV Launcher.app"`
-- **Windows** — SmartScreen shows *"Windows protected your PC"* →
+- **Windows:** SmartScreen shows *"Windows protected your PC"* →
   **More info** → **Run anyway**.
-- **Windows Defender Firewall** — first launch pops *"Allow AV Launcher to communicate
-  on these networks"*. Tick **Private** (and **Domain** on a managed network) — AV
+- **Windows Defender Firewall:** the first launch pops up *"Allow AV Launcher to communicate
+  on these networks"*. Tick **Private** (and **Domain** on a managed network). AV
   Launcher needs it to bind the wrapped app's web server to the interface you chose in
-  the panel. Deny it and the app will start but be reachable only from the machine it
+  the panel. Deny it and the app will start but only be reachable from the machine it
   runs on.
-- **Linux** — no signing gate.
+- **Linux:** no signing gate.
 
 Per-artifact steps, self-signing, checksum verification and the Defender Firewall reset
 procedure: **[docs/UNSIGNED.md](docs/UNSIGNED.md)**.

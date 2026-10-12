@@ -1,7 +1,8 @@
 # av-launcher user guide
 
-A menu-bar tray launcher for the fleet's local web-server apps: pick a **network interface** and
-**port**, **Start/Stop** the server, **Open** the web UI, and leave it in the **system tray**.
+av-launcher is a menu-bar tray launcher for the fleet's local web-server apps. It lets you pick a
+**network interface** and **port**, **Start/Stop** the server, **Open** the web UI, and leave it
+all in the **system tray**.
 
 If you're using `srt-router`, `flock` or `RFutils` as a desktop app, this is the shell you're
 looking at.
@@ -9,18 +10,18 @@ looking at.
 ---
 
 ## If the server won't start on a clean Mac, read this first
-**The released builds are now Developer ID-signed and notarised**, so this should no longer bite
-anyone who downloads the `.dmg` or `.pkg`. It is still the first thing to check if you built the
-app yourself, or if you are running a download from before that changed — because **for an
-unsigned `.app` that bundles helper binaries, approving the app does NOT unquarantine its
+**The released builds are now Developer ID-signed and notarised**, so this shouldn't bite
+anyone who downloads the `.dmg` or `.pkg` any more. It's still the first thing to check if you
+built the app yourself, or if you're running a download from before that changed, because **for
+an unsigned `.app` that bundles helper binaries, approving the app does NOT unquarantine its
 payload, and the helpers are SIGKILLed silently.**
 
-That is exactly this app's shape — a tray app wrapping an embedded server binary. The failure
+That's this app's shape to a tee: a tray app wrapping an embedded server binary. The failure
 mode is nasty:
 
 - the app launches and **looks completely fine**;
 - the server **never starts**;
-- **there is no visible error.**
+- **there's no visible error.**
 
 **This is the first thing to check, not a bug in the server.** Clearing the quarantine attribute
 on the whole bundle is the usual fix:
@@ -29,14 +30,14 @@ on the whole bundle is the usual fix:
 xattr -dr com.apple.quarantine "/Applications/<the app>.app"
 ```
 
-Consuming apps ship signing notes of their own — see each app's `launcher/SIGNING.md`.
+The apps built on it ship signing notes of their own. See each app's `launcher/SIGNING.md`.
 
 ### What has and hasn't been tested
 
-The Rust backend compiles and the panel UI has been exercised **via its mock backend**. **The
-full tray app has not been run end-to-end against a live server on the target machine.**
+The Rust backend compiles and the panel UI has been exercised **through its mock backend**.
+**The full tray app hasn't been run end to end against a live server on the target machine.**
 
-Given the above, that gap matters: **the untested path is exactly the one where the Gatekeeper
+Given the above, that gap matters: **the untested path is the very one where the Gatekeeper
 problem shows up.**
 
 ---
@@ -45,13 +46,13 @@ problem shows up.**
 
 ![The launcher panel for flock: the app's own name and icon, a RUNNING badge with the URL the server is actually on, the network interface and port selectors, Stop server, and Open / Hide / Quit.](screenshots/panel-flock.png)
 
-*The same shell, themed per app — [srt-router](screenshots/panel-srt-router.png) and
+*The same shell, themed per app. [srt-router](screenshots/panel-srt-router.png) and
 [RFutils](screenshots/panel-rfutils.png) get their own name, icon and colour, and behave
-identically.*
+the same way.*
 
 The URL under the RUNNING badge is **the address the server is actually bound to**, not a
 template. If it says `127.0.0.1` when you expected a LAN address, the interface selector is the
-thing to change — copy that URL to reach the app from another machine.
+thing to change. Copy that URL to reach the app from another machine.
 
 | Control | Does |
 |---|---|
@@ -76,19 +77,19 @@ The **GUI Interface** dropdown lists every bindable IPv4 interface plus **All in
   IP** so the link is still clickable.
 
 > **"All interfaces" means the server is reachable from your whole network.** Whether that's
-> appropriate depends on the app you're launching and what it can do — several of these fleet
+> a good idea depends on the app you're launching and what it can do, and several of these fleet
 > apps have no authentication. Pick a specific interface if you want it contained.
 
 Your interface and port choice is **remembered** between launches, in the OS app-config
 directory.
 
-**If your port silently reverts to the default**, the saved settings file is missing or
-unreadable — every failure there falls back to the default without an error.
+**If your port silently goes back to the default**, the saved settings file is missing or
+unreadable. Every failure there falls back to the default without an error.
 
 ---
 
 ## Starting and stopping
-- **Pressing Start when it's already running does nothing harmful** — it just reports the current
+- **Pressing Start when it's already running does nothing harmful.** It just reports the current
   status. It does **not** restart the server.
 - **If Start fails, the panel says why**, in red under the buttons, and keeps saying it until you
   press Start again, press Stop, or change the interface or port:
@@ -96,9 +97,9 @@ unreadable — every failure there falls back to the default without an error.
     already running."* Something else holds the port — often another copy of this app (a
     second launcher, or the server started by hand). **Open** still works, so you can see
     what is there; otherwise stop it or pick a different port.
-  - *"This computer refuses port 80…"* — the operating system reserves it or wants
+  - *"This computer refuses port 80…"*: the operating system reserves it or wants
     administrator rights. Choose a port above 1023.
-  - *"…is not an address of this computer right now"* — the interface you chose has gone
+  - *"…is not an address of this computer right now"*: the interface you chose has gone
     (cable out, Wi-Fi moved). Choose another.
   - *"The flock server exited right after starting (exit code 1). Its last output is below."*
     — the server itself failed, and its last lines are shown so you can see what it said. On
@@ -106,9 +107,9 @@ unreadable — every failure there falls back to the default without an error.
 - **If the server exits on its own later**, the panel notices the next time it refreshes status
   (within a couple of seconds), and reports it the same way.
 - **Stop and Quit ask the server to shut down, then make sure it has.** On macOS and Linux the
-  server is sent SIGTERM and given 3 seconds to save its state and stop anything it started;
-  only a server still running after that is killed outright. On Windows the server is ended at
-  once — there is no equivalent request to send it — so an app that writes state on exit may
+  server is sent SIGTERM and given 3 seconds to save its state and stop anything it started.
+  Only a server still running after that is killed outright. On Windows the server is ended at
+  once (there's no equivalent request to send it), so an app that writes state on exit may
   not get the chance there.
 
 ---
@@ -129,6 +130,6 @@ unreadable — every failure there falls back to the default without an error.
 
 ## See also
 
-- [API.md](API.md) — the launcher contract and the command surface
-- [adding-an-app.md](adding-an-app.md) — wrapping another app in this shell
-- [DEVELOPING.md](DEVELOPING.md) — building it
+- [API.md](API.md): the launcher contract and the command surface
+- [adding-an-app.md](adding-an-app.md): wrapping another app in this shell
+- [DEVELOPING.md](DEVELOPING.md): building it
