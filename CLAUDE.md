@@ -1,6 +1,6 @@
 # av-launcher
 
-Reusable Tauri v2 tray-launcher shell (per-app-themed card UI) that wraps the fleet's web apps. Each of srt-router / flock / RFutils ships this as its OWN desktop app (server embedded; RFutils embeds a Node runtime). Released combined v0.1.0.
+Reusable Tauri v2 tray-launcher shell (per-app-themed card UI) that wraps the fleet's web apps. Each of srt-router / flock / RFutils ships this as its OWN desktop app (server embedded; RFutils embeds a Node runtime). Released; v0.3.2 is the latest.
 
 ## Commands
 - Dev: `npm run tauri dev`
@@ -14,7 +14,7 @@ Reusable Tauri v2 tray-launcher shell (per-app-themed card UI) that wraps the fl
 - `scripts/`, `docs/`
 
 ## Notes
-- This is a shared shell consumed by multiple apps — changes here ripple to srt-router/flock/RFutils desktop builds. Keep the launcher API stable.
+- This is a shared shell consumed by multiple apps — changes here ripple to every app carrying a copy under `launcher/` (srt-router/flock/RFutils and, by 2026-10-12, 26 more public repos). Keep the launcher API stable.
 - Public repo. Multi-platform release CI; cross-compile macOS x86_64 on macos-14 (never macos-13). "Commit" = commit **and** push.
 
 ## Diagnostics

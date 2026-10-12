@@ -60,7 +60,7 @@ thing to change. Copy that URL to reach the app from another machine.
 
 | Control | Does |
 |---|---|
-| **GUI Interface** | which network interface the server binds |
+| **Network interface** | which network interface the server binds |
 | **Port** | which port |
 | **Start / Stop** | run or kill the server |
 | **Open** | open the web UI in your browser |
@@ -73,7 +73,7 @@ close the panel expecting the app to keep serving, use Hide.
 ---
 
 ## Interface and port
-The **GUI Interface** dropdown lists every bindable IPv4 interface plus **All interfaces
+The **Network interface** dropdown lists every bindable IPv4 interface plus **All interfaces
 (0.0.0.0)**.
 
 - **A specific interface** → the server binds that IP, and the URL shows that IP.

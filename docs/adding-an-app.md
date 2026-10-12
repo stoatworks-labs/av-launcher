@@ -28,7 +28,7 @@ For a distributable build, copy the app's config to `src-tauri/launcher.toml`
 name = "flock"                     # shown in the panel + tray
 command = "/abs/path/to/binary"    # or a command on PATH ("node")
 args = ["{config}"]                # argv; supports {host} {port} {config}
-url = "http://{host}:{port}/"      # what "Launch GUI" opens and the panel shows
+url = "http://{host}:{port}/"      # what "Open" opens and the panel shows
 default_port = 8080
 cwd = "/abs/path/to/repo"          # working dir for the child (optional)
 
@@ -90,9 +90,11 @@ args = ["--host", "{host}", "--port", "{port}"]
 mode = "args"
 ```
 
-* **WebLinked** uses this, with one addition worth copying: the app has its own
-  window (its control page, served by the process itself), so the config passes
-  `--headless` alongside the injected host and port. An app that can show its
+* **openRCS** uses this, with `args = ["--listen", "{host}:{port}"]`.
+* **WebLinked** used it too, before it got a tray icon of its own, with one
+  addition worth copying: the app has its own window (its control page, served
+  by the process itself), so the config passes `--headless` alongside the
+  injected host and port. An app that can show its
   own UI needs telling not to, or the tray ends up supervising a process that
   has already put a second, unmanaged copy of the UI on screen.
 
@@ -141,7 +143,7 @@ or a signature of its own.
 
 ## Host / interface resolution
 
-The **GUI Interface** dropdown lists every bindable IPv4 interface plus an
+The **Network interface** dropdown lists every bindable IPv4 interface plus an
 "All interfaces (0.0.0.0)" entry:
 
 * A **specific interface** → the server binds that IP and the URL shows that IP.

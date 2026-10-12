@@ -21,9 +21,10 @@ API** the panel UI talks to.
 > each ship it as their *own* desktop app, with the server embedded (and for RFutils, an embedded
 > Node runtime too).
 >
-> **A change here is not a change to one product — it lands in three. Keep the launcher API
-> stable.** Before altering anything in the config or launcher contract, check `launchers/*.toml`
-> and consider what each consuming app expects.
+> **A change here is not a change to one product — it lands in every app that carries a copy
+> under `launcher/` (29 public repos on 2026-10-12). Keep the launcher API stable.** Before
+> altering anything in the config or launcher contract, check `launchers/*.toml` and consider
+> what each consuming app expects.
 
 **The launcher itself knows nothing about any particular server.** Each supervised app is
 described by a small `launcher.toml` saying how to start the binary and — crucially — **how to
@@ -93,7 +94,7 @@ settings change (see below).
 | `open_gui` | — | opens the resolved URL in the default browser |
 | `fit_panel(height)` | — | resizes the panel window to `height` logical px, keeping its width and top-left; the panel grows to show a failure's output and shrinks back |
 | `hide_window` | — | **infallible** |
-| `quit_app` | — | **infallible**; kills the child first |
+| `quit_app` | — | **infallible**; stops the child first (see below) |
 
 `Status` is `{ running, url, host, port, message, failure }` — the whole panel state in one
 object, so the UI re-renders from a single value after every action. `failure` is `null` while

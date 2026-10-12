@@ -80,9 +80,9 @@ to install). Each is built and released from its own repo:
 
 | app | source | download | server embedding |
 | --- | --- | --- | --- |
-| srt-router | [`launcher/`](https://github.com/stoatworks-labs/srt-router/tree/main/launcher) | [v0.1.0](https://github.com/stoatworks-labs/srt-router/releases/tag/v0.1.0) | native binary bundled |
-| flock | [`launcher/`](https://github.com/stoatworks-labs/flock/tree/main/launcher) | [v0.1.0](https://github.com/stoatworks-labs/flock/releases/tag/v0.1.0) | native binary bundled |
-| RFutils | [`launcher/`](https://github.com/stoatworks-labs/RFutils/tree/main/launcher) | [v0.1.0](https://github.com/stoatworks-labs/RFutils/releases/tag/v0.1.0) | Node runtime + app embedded |
+| srt-router | [`launcher/`](https://github.com/stoatworks-labs/srt-router/tree/main/launcher) | [latest](https://github.com/stoatworks-labs/srt-router/releases/latest) | native binary bundled |
+| flock | [`launcher/`](https://github.com/stoatworks-labs/flock/tree/main/launcher) | [latest](https://github.com/stoatworks-labs/flock/releases/latest) | native binary bundled |
+| RFutils | [`launcher/`](https://github.com/stoatworks-labs/RFutils/tree/main/launcher) | [latest](https://github.com/stoatworks-labs/RFutils/releases/latest) | Node runtime + app embedded |
 
 This repo is still the canonical template and shell. A shipped `.app` finds its
 baked-in config, theme and server (a native binary, or an embedded Node runtime
@@ -102,7 +102,7 @@ to start the binary and, more importantly, **how to inject the chosen
 | --- | --- | --- |
 | `configfile` | patches a dotted key in the app's own TOML, then passes the rendered copy as the config arg | **srt-router** (nested `web.bind`, `--config`), **flock** (top-level `bind`, positional arg) |
 | `env` | sets environment variables | **RFutils** (`RFUTILS_SERVER_PORT` / `RFUTILS_HOST`) |
-| `args` | `{host}`/`{port}` placeholders already in `[app].args` | **WebLinked** (`--bind` / `--port`, plus `--headless`) |
+| `args` | `{host}`/`{port}` placeholders already in `[app].args` | **openRCS** (`--listen {host}:{port}`) |
 
 There's a fourth kind of app with nothing to launch. The fleet's browser tools are static
 pages, and a tray app for one of those needs something to *serve* `dist/` rather than a
@@ -114,15 +114,15 @@ without a word. See [docs/adding-an-app.md](docs/adding-an-app.md#a-static-site-
 
 Ready-made configs for each app live in [`launchers/`](launchers/). To point the
 launcher at one you just pick a config and swap the icon, with no Rust changes.
-(A future version can ship one bundled app per fleet member, each with its own
-baked-in `launcher.toml` + icon.)
+That's how each [shipped app](#shipped-apps) is made: its own baked-in
+`launcher.toml` and icon.
 
 See [docs/adding-an-app.md](docs/adding-an-app.md) for the full schema and a
 new-app checklist.
 
 ### What the panel does
 
-- **GUI Interface** dropdown: every bindable IPv4 interface, plus an
+- **Network interface** dropdown: every bindable IPv4 interface, plus an
   "All interfaces (0.0.0.0)" entry. Choosing a specific interface binds to that
   IP and shows it in the URL; "All" binds `0.0.0.0` and shows your primary LAN IP.
 - **Port:** remembered per app.
@@ -142,7 +142,7 @@ new-app checklist.
     reports the exit status with the last lines it wrote. A server that dies
     later is reported the same way by the status poll. The same text goes to
     the diagnostics log.
-- **Launch GUI:** opens the resolved URL in your default browser.
+- **Open:** opens the resolved URL in your default browser.
 - **Hide** hides it to the tray; **Quit** stops the server and exits.
 - Interface and port are locked while the server is running.
 
@@ -227,7 +227,8 @@ cd src-tauri && cargo test  # host:port injection for all three modes (incl. flo
 
 ```
 src/                 panel UI (index.html, styles.css, main.js)
-launchers/           ready-made per-app configs (srt-router, flock, rfutils)
+launchers/           ready-made per-app configs (srt-router, flock, rfutils, openrcs,
+                     oxbow, weblinked, static-site)
 docs/adding-an-app.md   schema + injection modes + new-app checklist
 src-tauri/
   launcher.toml      the ACTIVE per-app config (this build → srt-router)

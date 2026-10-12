@@ -12,7 +12,7 @@ gives any of them a small panel to pick a **network interface** and **port**, **
 the server, **Open** the web UI, and live in the **system tray** — without each app building
 that for itself.
 
-Tauri v2. Public repo. Released as combined v0.1.0.
+Tauri v2. Public repo. Released; v0.3.2 is the latest.
 
 ## 2. The thing that makes this repo different: changes ripple
 
@@ -20,9 +20,10 @@ Tauri v2. Public repo. Released as combined v0.1.0.
 each ship it as their *own* desktop app, with the server embedded (and for RFutils, an
 embedded Node runtime too).
 
-So a change here is not a change to one product — it lands in three. **Keep the launcher API
-stable.** Before altering anything in the config or launcher contract, check
-`launchers/*.toml` and consider what each consuming app expects.
+So a change here is not a change to one product — it lands in every app that carries a copy
+under `launcher/` (29 public repos on 2026-10-12). **Keep the launcher API stable.** Before
+altering anything in the config or launcher contract, check `launchers/*.toml` and consider
+what each consuming app expects.
 
 ## 3. Layout
 
@@ -35,7 +36,8 @@ src-tauri/      Tauri/Rust shell - main binary, tray, window management
   lib.rs / main.rs
   launcher.toml   Default/dev launcher config
 launchers/      Per-app launcher configs and themes
-  srt-router.toml, flock.toml, rfutils.toml
+  srt-router.toml, flock.toml, rfutils.toml, openrcs.toml, oxbow.toml,
+  weblinked.toml, static-site.toml
 scripts/, docs/
 ```
 

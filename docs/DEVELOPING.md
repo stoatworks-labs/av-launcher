@@ -1,6 +1,6 @@
 # av-launcher — Developing
 
-Tauri v2. Public repo, released as combined v0.1.0.
+Tauri v2. Public repo, released; v0.3.2 is the latest.
 
 ---
 
@@ -10,8 +10,8 @@ Tauri v2. Public repo, released as combined v0.1.0.
 > ship it as their **own** desktop app, with the server embedded (and for RFutils, an embedded
 > Node runtime too).
 >
-> **So a change here is not a change to one product — it lands in three. Keep the launcher API
-> stable.**
+> **So a change here is not a change to one product — it lands in every app that carries a copy
+> under `launcher/` (29 public repos on 2026-10-12). Keep the launcher API stable.**
 
 Before altering anything in the config or launcher contract, **check `launchers/*.toml` and
 consider what each consuming app expects.** The three shipped configs are deliberately different
@@ -64,11 +64,12 @@ src/            Launcher card UI (frontend). The original card design, themed
                 per-app from [app.theme].
 src-tauri/      Tauri/Rust shell — main binary, tray, window management
   config.rs       Launcher configuration + interface enumeration
-  lib.rs          The ten #[tauri::command]s, child supervision, settings
+  lib.rs          The eleven #[tauri::command]s, child supervision, settings
   main.rs
   launcher.toml   The ACTIVE launcher config for this build
 launchers/      Per-app launcher configs and themes
-  srt-router.toml, flock.toml, rfutils.toml
+  srt-router.toml, flock.toml, rfutils.toml, openrcs.toml, oxbow.toml,
+  weblinked.toml, static-site.toml
 scripts/, docs/
 ```
 
