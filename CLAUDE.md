@@ -15,7 +15,7 @@ Reusable Tauri v2 tray-launcher shell (per-app-themed card UI) that wraps the fl
 
 ## Notes
 - This is a shared shell consumed by multiple apps — changes here ripple to every app carrying a copy under `launcher/` (srt-router/flock/RFutils and, by 2026-10-12, 26 more public repos). Keep the launcher API stable.
-- Public repo. Multi-platform release CI; cross-compile macOS x86_64 on macos-14 (never macos-13). "Commit" = commit **and** push.
+- Public repo. Multi-platform release CI; cross-compile macOS x86_64 on macos-15 (never macos-13). "Commit" = commit **and** push.
 
 ## Diagnostics
 

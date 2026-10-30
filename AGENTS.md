@@ -122,7 +122,7 @@ shows up.
 
 ## 7. Conventions
 
-- Multi-platform release CI; cross-compile macOS x86_64 on `macos-14` — never `macos-13`,
+- Multi-platform release CI; cross-compile macOS x86_64 on `macos-15` — never `macos-13`,
   those Intel runners are retired.
 - Public repo. "Commit" means commit **and** push.
 
