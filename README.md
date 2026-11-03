@@ -13,6 +13,8 @@ A menu-bar **tray launcher** shell for the local web-server apps in this fleet
 **network interface** and **port**, **Start/Stop** the server, **Open** the web
 UI, and live in the **system tray**, so each app doesn't have to build its own.
 
+The [project page](https://stoatworks-labs.com/software/av-launcher/) has the downloads and the [user guide](https://stoatworks-labs.com/software/av-launcher/guide/).
+
 The panel is a card design of my own that **themes itself to match each app's web
 UI** (the palette lives in `launcher.toml`). It's built with
 [Tauri v2](https://tauri.app) (Rust and a tiny HTML/CSS/JS panel), so it's a small
